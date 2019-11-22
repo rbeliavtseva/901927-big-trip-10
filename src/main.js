@@ -429,15 +429,42 @@ const render = (container, template, place = `beforeend`) => {
   container.insertAdjacentHTML(place, template);
 };
 
-render(tripInfoSection, createTripTemplate(), `afterbegin`);
-render(tripControlsElement.children[0], createMenuTemplate(), `afterend`);
-render(tripControlsElement, createFilterTemplate());
-render(tripEventsElement, createSortTripTemplate());
-render(tripEventsElement, createTripContentTemplate());
-const eventsListElement = tripEventsElement.querySelector(`.trip-days`);
-render(eventsListElement, createEventTemplate());
+const renderTripInfo = () => {
+  render(tripInfoSection, createTripTemplate(), `afterbegin`);
+};
 
-new Array(DAYS_COUNT)
+const renderMenu = () => {
+  render(tripControlsElement.children[0], createMenuTemplate(), `afterend`);
+};
+
+const renderFilter = () => {
+  render(tripControlsElement, createFilterTemplate());
+};
+
+const renderSorting = () => {
+  render(tripEventsElement, createSortTripTemplate());
+};
+
+const renderTripContentList = () => {
+  render(tripEventsElement, createTripContentTemplate());
+};
+
+const renderTripForm = () => {
+  render(eventsListElement, createEventTemplate());
+};
+
+const renderCards = (numberOfCards) => {
+  new Array(numberOfCards)
   .fill(``)
   .forEach(() => render(eventsListElement, createTripCardTemplate())
   );
+};
+
+renderTripInfo();
+renderMenu();
+renderFilter();
+renderSorting();
+renderTripContentList();
+const eventsListElement = tripEventsElement.querySelector(`.trip-days`);
+renderTripForm();
+renderCards(DAYS_COUNT);
