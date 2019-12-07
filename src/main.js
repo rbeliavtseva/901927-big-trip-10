@@ -5,8 +5,12 @@ import {createSortTripTemplate} from './components/sort.js';
 import {createTripContentTemplate} from './components/trip-content.js';
 import {createEventTemplate} from './components/event.js';
 import {createTripCardTemplate} from './components/card.js';
+import {generateEvents, tripInfoData} from './mock/event.js';
+import {generateFilters} from './mock/filter.js';
+import {generateMenuItems} from './mock/menu.js';
 
-const DAYS_COUNT = 3;
+const DAYS_COUNT = 4;
+const NUMBER_OF_EVENTS = 4;
 
 const siteHeaderElement = document.querySelector(`.page-header`);
 const tripInfoSection = siteHeaderElement.querySelector(`.trip-info`);
@@ -19,15 +23,17 @@ const render = (container, template, place = `beforeend`) => {
 };
 
 const renderTripInfo = () => {
-  render(tripInfoSection, createTripTemplate(), `afterbegin`);
+  render(tripInfoSection, createTripTemplate(tripInfoData), `afterbegin`);
 };
 
+const menuItems = generateMenuItems();
 const renderMenu = () => {
-  render(tripControlsElement.children[0], createMenuTemplate(), `afterend`);
+  render(tripControlsElement.children[0], createMenuTemplate(menuItems), `afterend`);
 };
 
+const filters = generateFilters();
 const renderFilter = () => {
-  render(tripControlsElement, createFilterTemplate());
+  render(tripControlsElement, createFilterTemplate(filters));
 };
 
 const renderSorting = () => {
@@ -38,15 +44,21 @@ const renderTripContentList = () => {
   render(tripEventsElement, createTripContentTemplate());
 };
 
+const generatedEvent = generateEvents(NUMBER_OF_EVENTS);
 const renderTripForm = () => {
-  render(eventsListElement, createEventTemplate());
+  render(eventsListElement, createEventTemplate(generatedEvent[0]));
 };
 
+const cards = generatedEvent.slice(1, generatedEvent.length);
 const renderCards = (numberOfCards) => {
   new Array(numberOfCards)
   .fill(``)
-  .forEach(() => render(eventsListElement, createTripCardTemplate())
-  );
+  .forEach((_, i) => {
+    const filteredElements = cards.filter((it) => it.date.day === i);
+    if (filteredElements.length > 0) {
+      render(eventsListElement, createTripCardTemplate(filteredElements, i));
+    }
+  });
 };
 
 renderTripInfo();
