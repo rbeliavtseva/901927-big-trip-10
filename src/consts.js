@@ -1,0 +1,41 @@
+const CURRENT_YEAR = 2019;
+
+const CURRENT_MONTH = 3;
+
+const Hours = {
+  MIN: 0,
+  MAX: 23
+};
+
+const Minutes = {
+  MIN: 0,
+  MAX: 59
+};
+
+const Dates = {
+  START_DATE: 18,
+  END_DATE: 21
+};
+
+const NumberOfSentences = {
+  MIN: 1,
+  MAX: 3
+};
+
+const NumberOfOptions = {
+  MIN: 0,
+  MAX: 2
+};
+
+const NUMBER_OF_PICTURES = 5;
+
+const AmountOfPrice = {
+  MIN: 20,
+  MAX: 199
+};
+
+const MS = 1000;
+
+const TIME = 60;
+
+export {CURRENT_YEAR, CURRENT_MONTH, Hours, Minutes, Dates, NumberOfSentences, NumberOfOptions, NUMBER_OF_PICTURES, AmountOfPrice, MS, TIME};

@@ -1,37 +1,6 @@
 import {toEventDateFormat} from '../util.js';
 
-/*
-const createEventTypeMarkup = (eventType, isChecked) => {
-  const label = eventType.slice(0, 1).toUpperCase() + eventType.slice(1, eventType.length).toString();
-
-  return (
-    `<div class="event__type-item">
-      <input
-        id="event-type-${eventType}-1"
-        class="event__type-input visually-hidden"
-        type="radio"
-        name="event-type"
-        value="${eventType}"
-        ${isChecked ? `checked` : ``}
-      />
-      <label
-        class="event__type-label
-        event__type-label--${eventType}"
-        for="event-type-${eventType}-1">
-          ${label}
-      </label>
-    </div>`
-  );
-};
-
-const createCityOptionsMarkup = (city) => {
-  return (
-    `<option value="${city}"></option>`
-  );
-};
-*/
-
-const createOffersMarkup = (offer) => {
+const createOfferMarkup = (offer) => {
   const {type, name, price} = offer;
   return (
     `<div class="event__offer-selector">
@@ -60,14 +29,8 @@ const createPicturesMarkup = (pictures) => {
 export const createEventTemplate = (eventData) => {
   const {eventType, city, date, offers, pictures, description, price} = eventData;
 
-  /*
-  const transportTypeMarkup = eventTypes.Transport.map((it, i) => createEventTypeMarkup(it, i === 0)).join(`\n`);
-  const activitiesTypeMarkup = eventTypes.Activities.map((it, i) => createEventTypeMarkup(it, i === 0)).join(`\n`);
-  const cityOptionsMarkup = cities.map((it) => createCityOptionsMarkup(it)).join(`\n`);
-  */
-
   const offersMarkup = offers.length > 0
-    ? offers.map((it) => createOffersMarkup(it)).join(`\n`)
+    ? offers.map((it) => createOfferMarkup(it)).join(`\n`)
     : ``;
 
   const picturesMarkup = pictures.map((it) => createPicturesMarkup(it)).join(`\n`);

@@ -1,10 +1,10 @@
-const menuItems = [
+const MenuItems = [
   `Table`,
   `Stats`
 ];
 
 const generateMenuItems = () => {
-  return menuItems.map((it) => {
+  return MenuItems.map((it) => {
     return {
       name: it,
     };

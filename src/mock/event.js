@@ -1,3 +1,5 @@
+import * as consts from '../consts.js';
+
 const EventTypes = [
   `bus`,
   `drive`,
@@ -24,23 +26,6 @@ sed finibus eget, sollicitudin eget ante. Phasellus eros mauris, condimentum sed
 Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui. Sed sed nisi sed augue
 convallis suscipit in sed felis. Aliquam erat volutpat. Nunc fermentum tortor ac porta dapibus. In rutrum ac purus
 sit amet tempus.`;
-
-const numberOfSentences = {
-  MIN: 1,
-  MAX: 3
-};
-
-const numberOfOptions = {
-  MIN: 0,
-  MAX: 2
-};
-
-const numberOfPictures = 5;
-
-const amountOfPrice = {
-  MIN: 20,
-  MAX: 199
-};
 
 const Offers = [
   {
@@ -70,28 +55,9 @@ const Offers = [
   }
 ];
 
-const CURRENT_YEAR = 2019;
+const startDate = new Date(consts.CURRENT_YEAR, consts.CURRENT_MONTH - 1, consts.Dates.START_DATE);
 
-const CURRENT_MONTH = 3;
-
-const Hours = {
-  MIN: 0,
-  MAX: 23
-};
-
-const Minutes = {
-  MIN: 0,
-  MAX: 59
-};
-
-const dates = {
-  START_DATE: 18,
-  END_DATE: 21
-};
-
-const startDate = new Date(CURRENT_YEAR, CURRENT_MONTH - 1, dates.START_DATE);
-
-const endDate = new Date(CURRENT_YEAR, CURRENT_MONTH - 1, dates.END_DATE);
+const endDate = new Date(consts.CURRENT_YEAR, consts.CURRENT_MONTH - 1, consts.Dates.END_DATE);
 
 const getRandomArrayItem = (array) => {
   const randomIndex = getRandomIntegerNumber(0, array.length - 1);
@@ -104,37 +70,26 @@ const getRandomIntegerNumber = (min, max) => {
 };
 
 const getRandomDate = () => {
-  const eventStartDate = new Date(CURRENT_YEAR, CURRENT_MONTH - 1, getRandomIntegerNumber(dates.START_DATE, dates.END_DATE));
+  const eventStartDate = new Date(consts.CURRENT_YEAR, consts.CURRENT_MONTH - 1, getRandomIntegerNumber(consts.Dates.START_DATE, consts.Dates.END_DATE));
   const diffTime = Math.abs(eventStartDate - startDate);
   const day = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  eventStartDate.setHours(getRandomIntegerNumber(Hours.MIN, Hours.MAX));
-  eventStartDate.setMinutes(getRandomIntegerNumber(Minutes.MIN, Minutes.MAX));
+  eventStartDate.setHours(getRandomIntegerNumber(consts.Hours.MIN, consts.Hours.MAX));
+  eventStartDate.setMinutes(getRandomIntegerNumber(consts.Minutes.MIN, consts.Minutes.MAX));
 
   const eventEndDate = new Date(eventStartDate.getFullYear(),
       eventStartDate.getMonth(),
       eventStartDate.getDate(),
-      getRandomIntegerNumber(eventStartDate.getHours(), Hours.MAX),
-      getRandomIntegerNumber(eventStartDate.getMinutes(), Minutes.MAX));
+      getRandomIntegerNumber(eventStartDate.getHours(), consts.Hours.MAX),
+      getRandomIntegerNumber(eventStartDate.getMinutes(), consts.Minutes.MAX));
 
   return {eventStartDate, day, eventEndDate};
-  // const sign = Math.random() > 0.5 ? 1 : -1;
-  // const diffValue = sign * getRandomIntegerNumber(0, 7);
-
-  // startDate.setDate(startDate.getDate() + diffValue);
-
-  // let endDate = startDate;
-  // endDate.setHours(endDate.getHours() + 1);
-  // endDate.setMinutes(endDate.getMinutes() + 30);
-
-  // console.log(startDate, endDate);
-  // return {startDate, endDate};
 };
 
-const generateOffers = (options) => {
+const generateOffers = (offers) => {
   const generatedOptions = [];
 
-  for (let i = 0; i < getRandomIntegerNumber(numberOfOptions.MIN, numberOfOptions.MAX); i++) {
-    generatedOptions.push(getRandomArrayItem(options));
+  for (let i = 0; i < getRandomIntegerNumber(consts.NumberOfOptions.MIN, consts.NumberOfOptions.MAX); i++) {
+    generatedOptions.push(getRandomArrayItem(offers));
   }
 
   return generatedOptions;
@@ -144,7 +99,7 @@ const generateDescription = (text) => {
   const fromTextArray = text.split(`.`);
   const descriptionText = [];
 
-  for (let i = 0; i < getRandomIntegerNumber(numberOfSentences.MIN, numberOfSentences.MAX); i++) {
+  for (let i = 0; i < getRandomIntegerNumber(consts.NumberOfSentences.MIN, consts.NumberOfSentences.MAX); i++) {
     descriptionText.push(getRandomArrayItem(fromTextArray));
   }
 
@@ -160,7 +115,7 @@ const generatePictures = (number) => {
 };
 
 const generatePrice = () => {
-  return getRandomIntegerNumber(amountOfPrice.MIN, amountOfPrice.MAX);
+  return getRandomIntegerNumber(consts.AmountOfPrice.MIN, consts.AmountOfPrice.MAX);
 };
 
 const generateEvents = (number) => {
@@ -175,7 +130,7 @@ const generateEvent = () => {
     city: getRandomArrayItem(Cities),
     date: getRandomDate(),
     offers: generateOffers(Offers),
-    pictures: generatePictures(numberOfPictures),
+    pictures: generatePictures(consts.NUMBER_OF_PICTURES),
     description: generateDescriptionText(),
     price: generatePrice()
   };

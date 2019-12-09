@@ -1,6 +1,6 @@
-import {formatTime, toISOstring, toCardTimePassedFormat} from '../util.js';
+import {formatTime, toCardTimePassedFormat} from '../util.js';
 
-const createOffersMarkup = (offer) => {
+const createOfferMarkup = (offer) => {
   const {name, price} = offer;
 
   return (
@@ -16,7 +16,7 @@ const createEventMarkup = (eventData) => {
   const {eventType, date, offers, price} = eventData;
 
   const offersMarkup = offers.length > 0
-    ? offers.map((it) => createOffersMarkup(it)).join(`\n`)
+    ? offers.map((it) => createOfferMarkup(it)).join(`\n`)
     : ``;
 
   return (
@@ -29,9 +29,9 @@ const createEventMarkup = (eventData) => {
 
         <div class="event__schedule">
           <p class="event__time">
-            <time class="event__start-time" datetime="${toISOstring(date.eventStartDate)}">${formatTime(date.eventStartDate)}</time>
+            <time class="event__start-time" datetime="${new Date(date.eventStartDate).toISOString()}">${formatTime(date.eventStartDate)}</time>
             &mdash;
-            <time class="event__end-time" datetime="${toISOstring(date.eventEndDate)}">${formatTime(date.eventEndDate)}</time>
+            <time class="event__end-time" datetime="${new Date(date.eventEndDate).toISOString()}">${formatTime(date.eventEndDate)}</time>
           </p>
           <p class="event__duration">${toCardTimePassedFormat(date.eventStartDate, date.eventEndDate)}</p>
         </div>
