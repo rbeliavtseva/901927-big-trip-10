@@ -86,13 +86,13 @@ const getRandomDate = () => {
 };
 
 const generateOffers = (offers) => {
-  const generatedOptions = [];
+  const generatedOffers = [];
 
   for (let i = 0; i < getRandomIntegerNumber(consts.NumberOfOptions.MIN, consts.NumberOfOptions.MAX); i++) {
-    generatedOptions.push(getRandomArrayItem(offers));
+    generatedOffers.push(getRandomArrayItem(offers));
   }
 
-  return generatedOptions;
+  return generatedOffers;
 };
 
 const generateDescription = (text) => {
