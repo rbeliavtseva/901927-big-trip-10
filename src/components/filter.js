@@ -1,3 +1,5 @@
+import {createElement} from '../utils/render.js';
+
 const createFilterMarkup = (filter, isChecked) => {
   const {name} = filter;
 
@@ -17,11 +19,30 @@ const createFilterMarkup = (filter, isChecked) => {
   );
 };
 
-export const createFilterTemplate = (filters) => {
-  const filtersMarkup = filters.map((it, i) => createFilterMarkup(it, i === 0)).join(`\n`);
-  return (
-    `<form class="trip-filters" action="#" method="get">
-      ${filtersMarkup}
-    </form>`
-  );
-};
+export default class Filters {
+  constructor(filters) {
+    this._filters = filters;
+    this._element = null;
+  }
+
+  getTemplate() {
+    const filtersMarkup = this._filters.map((it, i) => createFilterMarkup(it, i === 0)).join(`\n`);
+    return (
+      `<form class="trip-filters" action="#" method="get">
+        ${filtersMarkup}
+      </form>`
+    );
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

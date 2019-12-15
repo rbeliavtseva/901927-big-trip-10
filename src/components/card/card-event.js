@@ -1,14 +1,14 @@
-import {createElement} from '../utils/render.js';
+import {createElement} from '../../utils/render.js';
 
-export default class TripContent {
+export default class CardEvent {
   constructor() {
     this._element = null;
   }
 
   getTemplate() {
     return (
-      `<ul class="trip-days">
-      </ul>`
+      `<li class="trip-events__item">
+      </li>`
     );
   }
 

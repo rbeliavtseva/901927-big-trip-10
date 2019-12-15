@@ -1,3 +1,5 @@
+import {createElement} from '../utils/render.js';
+
 const createMenuMarkup = (item, isActive) => {
   const {name} = item;
 
@@ -11,12 +13,31 @@ const createMenuMarkup = (item, isActive) => {
   );
 };
 
-export const createMenuTemplate = (menuItems) => {
-  const menuMarkup = menuItems.map((it, i) => createMenuMarkup(it, i === 0)).join(`\n`);
+export default class SiteMenu {
+  constructor(menuItems) {
+    this._menuItems = menuItems;
+    this._element = null;
+  }
 
-  return (
-    `<nav class="trip-controls__trip-tabs  trip-tabs">
-      ${menuMarkup}
-    </nav>`
-  );
-};
+  getTemplate() {
+    const menuMarkup = this._menuItems.map((it, i) => createMenuMarkup(it, i === 0)).join(`\n`);
+
+    return (
+      `<nav class="trip-controls__trip-tabs  trip-tabs">
+        ${menuMarkup}
+      </nav>`
+    );
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

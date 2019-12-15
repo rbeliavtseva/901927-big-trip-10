@@ -1,4 +1,4 @@
-import {MS, TIME} from '../src/consts.js';
+import {MS, TIME} from '../consts.js';
 
 const pad = (number) => {
   if (number < 10) {

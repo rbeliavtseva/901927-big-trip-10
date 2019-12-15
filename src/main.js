@@ -1,13 +1,16 @@
-import {createTripTemplate} from './components/trip-info.js';
-import {createMenuTemplate} from './components/menu.js';
-import {createFilterTemplate} from './components/filter.js';
-import {createSortTripTemplate} from './components/sort.js';
-import {createTripContentTemplate} from './components/trip-content.js';
-import {createEventTemplate} from './components/event.js';
-import {createTripCardTemplate} from './components/card.js';
+import TripInfo from './components/trip-info.js';
+import SiteMenu from './components/menu.js';
+import Filters from './components/filter.js';
+import SortTrip from './components/sort.js';
+import TripContent from './components/trip-content.js';
+import Event from './components/event.js';
+import TripCardDay from './components/card/card.js';
+import CardEvent from './components/card/card-event.js';
+import CardEventContent from './components/card/card-event-content.js';
 import {generateEvents, tripInfoData} from './mock/event.js';
 import {generateFilters} from './mock/filter.js';
 import {generateMenuItems} from './mock/menu.js';
+import {RenderPosition, render} from './utils/render.js';
 
 const DAYS_COUNT = 4;
 const NUMBER_OF_EVENTS = 4;
@@ -18,46 +21,55 @@ const tripControlsElement = siteHeaderElement.querySelector(`.trip-controls`);
 const siteMainElement = document.querySelector(`.page-main`);
 const tripEventsElement = siteMainElement.querySelector(`.trip-events`);
 
-const render = (container, template, place = `beforeend`) => {
-  container.insertAdjacentHTML(place, template);
-};
-
 const renderTripInfo = () => {
-  render(tripInfoSection, createTripTemplate(tripInfoData), `afterbegin`);
+  render(tripInfoSection, new TripInfo(tripInfoData), RenderPosition.AFTERBEGIN);
 };
 
 const menuItems = generateMenuItems();
 const renderMenu = () => {
-  render(tripControlsElement.children[0], createMenuTemplate(menuItems), `afterend`);
+  render(tripControlsElement.children[0], new SiteMenu(menuItems), RenderPosition.AFTERBEGIN);
 };
 
 const filters = generateFilters();
 const renderFilter = () => {
-  render(tripControlsElement, createFilterTemplate(filters));
+  render(tripControlsElement, new Filters(filters), RenderPosition.BEFOREEND);
 };
 
 const renderSorting = () => {
-  render(tripEventsElement, createSortTripTemplate());
+  render(tripEventsElement, new SortTrip(), RenderPosition.BEFOREEND);
 };
 
 const renderTripContentList = () => {
-  render(tripEventsElement, createTripContentTemplate());
+  render(tripEventsElement, new TripContent(), RenderPosition.BEFOREEND);
 };
 
-const generatedEvent = generateEvents(NUMBER_OF_EVENTS);
-const renderTripForm = () => {
-  render(eventsListElement, createEventTemplate(generatedEvent[0]));
-};
-
-const cards = generatedEvent.slice(1, generatedEvent.length);
+const events = generateEvents(NUMBER_OF_EVENTS);
 const renderCards = (numberOfCards) => {
   new Array(numberOfCards)
   .fill(``)
   .forEach((_, i) => {
-    const filteredElements = cards.filter((it) => it.date.day === i);
-    if (filteredElements.length > 0) {
-      render(eventsListElement, createTripCardTemplate(filteredElements, i));
+    const newDay = new TripCardDay(i);
+    const tripEventsList = newDay.getElement().querySelector(`.trip-events__list`);
+    const filteredEvents = events.filter((it) => it.date.day === i);
+    if (filteredEvents.length > 0) {
+      filteredEvents.forEach((event)=>{
+        const tripCard = new CardEvent();
+        const tripEvent = tripCard.getElement();
+        const cardEventContent = new CardEventContent(event);
+        const cardEventContentEdit = new Event(event);
+        const rollupEventBtn = cardEventContent.getElement().querySelector(`.event__rollup-btn`);
+        rollupEventBtn.addEventListener(`click`, () => {
+          tripEvent.replaceChild(cardEventContentEdit.getElement(), cardEventContent.getElement());
+        });
+        const editEventForm = cardEventContentEdit.getElement();
+        editEventForm.addEventListener(`submit`, () => {
+          tripEvent.replaceChild(cardEventContent.getElement(), cardEventContentEdit.getElement());
+        });
+        render(tripEvent, cardEventContent, RenderPosition.BEFOREEND);
+        render(tripEventsList, tripCard, RenderPosition.BEFOREEND);
+      });
     }
+    render(eventsListElement, newDay, RenderPosition.BEFOREEND);
   });
 };
 
@@ -67,5 +79,4 @@ renderFilter();
 renderSorting();
 renderTripContentList();
 const eventsListElement = tripEventsElement.querySelector(`.trip-days`);
-renderTripForm();
 renderCards(DAYS_COUNT);
