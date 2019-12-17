@@ -1,6 +1,6 @@
-import {createElement} from '../../utils/render.js';
+import {createElement} from '../utils/render.js';
 
-export default class CardEvent {
+class CardEvent {
   constructor() {
     this._element = null;
   }
@@ -24,3 +24,5 @@ export default class CardEvent {
     this._element = null;
   }
 }
+
+export {CardEvent};

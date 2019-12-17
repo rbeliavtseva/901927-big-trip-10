@@ -1,18 +1,22 @@
 import * as consts from '../consts.js';
 
-const EventTypes = [
-  `bus`,
-  `drive`,
-  `flight`,
-  `ship`,
-  `taxi`,
-  `train`,
-  `transport`,
-  `check-in`,
-  `restaurant`,
-  `sightseeing`,
-  `trip`
-];
+const EventTypes = {
+  Transport: [
+    `bus`,
+    `drive`,
+    `flight`,
+    `ship`,
+    `taxi`,
+    `train`,
+    `transport`
+  ],
+  Activity: [
+    `restaurant`,
+    `sightseeing`,
+    `trip`,
+    `check-in`
+  ]
+};
 
 const Cities = [
   `Amsterdam`,
@@ -59,16 +63,36 @@ const startDate = new Date(consts.CURRENT_YEAR, consts.CURRENT_MONTH - 1, consts
 
 const endDate = new Date(consts.CURRENT_YEAR, consts.CURRENT_MONTH - 1, consts.Dates.END_DATE);
 
+const tripInfoData = {
+  date: {startDate, endDate},
+  cities: Cities
+};
+
+/**
+ * Функция возвращает случайный элемент массива
+ * @param {array} array Массив
+ * @return {*} Элемент массива
+ */
 const getRandomArrayItem = (array) => {
   const randomIndex = getRandomIntegerNumber(0, array.length - 1);
 
   return array[randomIndex];
 };
 
+/**
+ * Функция возвращает случайное число в диапазоне двух чисел
+ * @param {number} min Минимальное число
+ * @param {number} max Максимальное число
+ * @return {number} Случайное число в диапазоне
+ */
 const getRandomIntegerNumber = (min, max) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
+/**
+ * Функция возвращает случайную дату в указанном диапазоне
+ * @return {*} Возвращает случайную дату начала события, количество прошедших дней, случайную дату конца события
+ */
 const getRandomDate = () => {
   const eventStartDate = new Date(consts.CURRENT_YEAR, consts.CURRENT_MONTH - 1, getRandomIntegerNumber(consts.Dates.START_DATE, consts.Dates.END_DATE));
   const diffTime = Math.abs(eventStartDate - startDate);
@@ -85,6 +109,11 @@ const getRandomDate = () => {
   return {eventStartDate, day, eventEndDate};
 };
 
+/**
+ * Функция генерирует массив из случайных офферов
+ * @param {array} offers Массив из офферов
+ * @return {array} Возвращает массив из объектов
+ */
 const generateOffers = (offers) => {
   const generatedOffers = [];
 
@@ -95,6 +124,11 @@ const generateOffers = (offers) => {
   return generatedOffers;
 };
 
+/**
+ * Функция генерирует массив из случайных предложений
+ * @param {string} text Текст
+ * @return {array} Возвращает массив из строк
+ */
 const generateDescription = (text) => {
   const fromTextArray = text.split(`.`);
   const descriptionText = [];
@@ -110,6 +144,11 @@ const generateDescriptionText = () => {
   return generateDescription(mockText);
 };
 
+/**
+ * Функция генерирует массив из случайных фотографий
+ * @param {number} number Количество фото
+ * @return {array} Возвращает массив из строк
+ */
 const generatePictures = (number) => {
   return new Array(number).fill(``).map(() => `http://picsum.photos/300/150?r=${Math.random()}`);
 };
@@ -118,15 +157,13 @@ const generatePrice = () => {
   return getRandomIntegerNumber(consts.AmountOfPrice.MIN, consts.AmountOfPrice.MAX);
 };
 
-const generateEvents = (number) => {
-  return new Array(number)
-    .fill(``)
-    .map(generateEvent);
-};
-
+/**
+ * Функция генерирует случайное событие
+ * @return {object} Возвращает объект
+ */
 const generateEvent = () => {
   return {
-    eventType: getRandomArrayItem(EventTypes),
+    eventType: getRandomArrayItem(EventTypes.Transport.concat(EventTypes.Activity)),
     city: getRandomArrayItem(Cities),
     date: getRandomDate(),
     offers: generateOffers(Offers),
@@ -136,9 +173,15 @@ const generateEvent = () => {
   };
 };
 
-const tripInfoData = {
-  date: {startDate, endDate},
-  cities: Cities
+/**
+ * Функция генерирует массив из событий заданной длины
+ * @param {number} number Количество событий
+ * @return {array} Возвращает массив из объектов
+ */
+const generateEvents = (number) => {
+  return new Array(number)
+    .fill(``)
+    .map(generateEvent);
 };
 
-export {generateEvent, generateEvents, tripInfoData};
+export {generateEvent, generateEvents, tripInfoData, EventTypes};

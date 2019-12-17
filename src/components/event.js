@@ -1,5 +1,6 @@
 import {toEventDateFormat} from '../utils/date-time-format.js';
 import {createElement} from '../utils/render.js';
+import {checkEventTypeArticle, toUppercaseFirstLetter} from '../utils/events.js';
 
 const createOfferMarkup = (offer) => {
   const {type, name, price} = offer;
@@ -27,7 +28,7 @@ const createPicturesMarkup = (pictures) => {
   );
 };
 
-export default class Event {
+class Event {
   constructor(eventData) {
     this._eventData = eventData;
     this._element = null;
@@ -113,7 +114,7 @@ export default class Event {
 
             <div class="event__field-group  event__field-group--destination">
               <label class="event__label  event__type-output" for="event-destination-1">
-                Sightseeing at
+                ${toUppercaseFirstLetter(eventType)} ${checkEventTypeArticle(eventType)}
               </label>
               <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city}" list="destination-list-1">
               <datalist id="destination-list-1">
@@ -184,3 +185,5 @@ export default class Event {
     this._element = null;
   }
 }
+
+export {Event};

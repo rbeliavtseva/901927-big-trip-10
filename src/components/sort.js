@@ -1,6 +1,6 @@
 import {createElement} from '../utils/render.js';
 
-export default class SortTrip {
+class SortTrip {
   constructor() {
     this._element = null;
   }
@@ -46,3 +46,5 @@ export default class SortTrip {
     this._element = null;
   }
 }
+
+export {SortTrip};

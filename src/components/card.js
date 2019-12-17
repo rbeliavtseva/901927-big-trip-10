@@ -1,8 +1,10 @@
-import {createElement} from '../../utils/render.js';
+import {createElement} from '../utils/render.js';
+import {toShortDateTimeFormat, addDaysToDate} from '../utils/date-time-format.js';
 
-export default class TripCardDay {
-  constructor(day) {
+class TripCardDay {
+  constructor(day, tripInfoData) {
     this._day = day;
+    this._tripInfoData = tripInfoData;
     this._element = null;
   }
 
@@ -11,7 +13,7 @@ export default class TripCardDay {
       `<li class="trip-days__item  day">
         <div class="day__info">
           <span class="day__counter">${this._day + 1}</span>
-          <time class="day__date" datetime="2019-03-18">MAR 18</time>
+          <time class="day__date" datetime="2019-03-18">${toShortDateTimeFormat(addDaysToDate(this._tripInfoData, this._day))}</time>
         </div>
 
         <ul class="trip-events__list">
@@ -33,3 +35,5 @@ export default class TripCardDay {
     this._element = null;
   }
 }
+
+export {TripCardDay};

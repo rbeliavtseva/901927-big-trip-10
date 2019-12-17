@@ -19,7 +19,7 @@ const createFilterMarkup = (filter, isChecked) => {
   );
 };
 
-export default class Filters {
+class Filters {
   constructor(filters) {
     this._filters = filters;
     this._element = null;
@@ -46,3 +46,5 @@ export default class Filters {
     this._element = null;
   }
 }
+
+export {Filters};

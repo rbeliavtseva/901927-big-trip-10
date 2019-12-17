@@ -13,7 +13,7 @@ const createMenuMarkup = (item, isActive) => {
   );
 };
 
-export default class SiteMenu {
+class SiteMenu {
   constructor(menuItems) {
     this._menuItems = menuItems;
     this._element = null;
@@ -41,3 +41,5 @@ export default class SiteMenu {
     this._element = null;
   }
 }
+
+export {SiteMenu};

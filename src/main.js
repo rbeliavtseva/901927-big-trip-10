@@ -1,19 +1,17 @@
-import TripInfo from './components/trip-info.js';
-import SiteMenu from './components/menu.js';
-import Filters from './components/filter.js';
-import SortTrip from './components/sort.js';
-import TripContent from './components/trip-content.js';
-import Event from './components/event.js';
-import TripCardDay from './components/card/card.js';
-import CardEvent from './components/card/card-event.js';
-import CardEventContent from './components/card/card-event-content.js';
+import {TripInfo} from './components/trip-info.js';
+import {SiteMenu} from './components/menu.js';
+import {Filters} from './components/filter.js';
+import {SortTrip} from './components/sort.js';
+import {TripContent} from './components/trip-content.js';
+import {Event} from './components/event.js';
+import {TripCardDay} from './components/card.js';
+import {CardEvent} from './components/card-event.js';
+import {CardEventContent} from './components/card-event-content.js';
 import {generateEvents, tripInfoData} from './mock/event.js';
 import {generateFilters} from './mock/filter.js';
 import {generateMenuItems} from './mock/menu.js';
-import {RenderPosition, render} from './utils/render.js';
-
-const DAYS_COUNT = 4;
-const NUMBER_OF_EVENTS = 4;
+import {render} from './utils/render.js';
+import {RenderPosition, DAYS_COUNT, NUMBER_OF_EVENTS} from './consts.js';
 
 const siteHeaderElement = document.querySelector(`.page-header`);
 const tripInfoSection = siteHeaderElement.querySelector(`.trip-info`);
@@ -44,33 +42,69 @@ const renderTripContentList = () => {
 };
 
 const events = generateEvents(NUMBER_OF_EVENTS);
+
+/**
+ * Функция рендерит все карточки-контейнеры для каждого дня путешествия
+ * @param {number} numberOfCards Количество дней путешествия
+ */
 const renderCards = (numberOfCards) => {
   new Array(numberOfCards)
   .fill(``)
-  .forEach((_, i) => {
-    const newDay = new TripCardDay(i);
-    const tripEventsList = newDay.getElement().querySelector(`.trip-events__list`);
-    const filteredEvents = events.filter((it) => it.date.day === i);
-    if (filteredEvents.length > 0) {
-      filteredEvents.forEach((event)=>{
-        const tripCard = new CardEvent();
-        const tripEvent = tripCard.getElement();
-        const cardEventContent = new CardEventContent(event);
-        const cardEventContentEdit = new Event(event);
-        const rollupEventBtn = cardEventContent.getElement().querySelector(`.event__rollup-btn`);
-        rollupEventBtn.addEventListener(`click`, () => {
-          tripEvent.replaceChild(cardEventContentEdit.getElement(), cardEventContent.getElement());
-        });
-        const editEventForm = cardEventContentEdit.getElement();
-        editEventForm.addEventListener(`submit`, () => {
-          tripEvent.replaceChild(cardEventContent.getElement(), cardEventContentEdit.getElement());
-        });
-        render(tripEvent, cardEventContent, RenderPosition.BEFOREEND);
-        render(tripEventsList, tripCard, RenderPosition.BEFOREEND);
-      });
-    }
-    render(eventsListElement, newDay, RenderPosition.BEFOREEND);
+  .forEach((_, day) => {
+    renderDayOfTrip(day);
   });
+};
+
+/**
+ * Функция заполняет контейнер дня путешествия
+ * @param {number} day Номер дня путешествия
+ */
+const renderDayOfTrip = (day) => {
+  const newDay = new TripCardDay(day, tripInfoData.date.startDate);
+  const tripEventsList = newDay.getElement().querySelector(`.trip-events__list`);
+  const filteredEvents = events.filter((it) => it.date.day === day);
+  if (filteredEvents.length > 0) {
+    renderDayEvents(filteredEvents, tripEventsList);
+  }
+
+  render(eventsListElement, newDay, RenderPosition.BEFOREEND);
+};
+
+/**
+ * Функция заполнения событиями дня
+ * @param {*} filteredEvents - массив событий, отфильтрованных по конкретному дню
+ * @param {*} tripEventsList - контейнер
+ */
+const renderDayEvents = (filteredEvents, tripEventsList) => {
+  filteredEvents.forEach((event) => {
+    const tripDayEvent = new CardEvent();
+    const tripEvent = tripDayEvent.getElement();
+    renderTripDayEventContent(event, tripEvent);
+
+    render(tripEventsList, tripDayEvent, RenderPosition.BEFOREEND);
+  });
+};
+
+/**
+ * Функция рендерит два типа карточки для каждого ивента - сокращенную и форму редактирования
+ * @param {*} event - одиночное событие из массива событий одного дня
+ * @param {*} tripEvent - контейнер
+ */
+const renderTripDayEventContent = (event, tripEvent) => {
+  const tripDayEventContent = new CardEventContent(event);
+  const tripDayEventContentEdit = new Event(event);
+
+  const rollupEventBtn = tripDayEventContent.getElement().querySelector(`.event__rollup-btn`);
+  rollupEventBtn.addEventListener(`click`, () => {
+    tripEvent.replaceChild(tripDayEventContentEdit.getElement(), tripDayEventContent.getElement());
+  });
+
+  const editEventForm = tripDayEventContentEdit.getElement();
+  editEventForm.addEventListener(`submit`, () => {
+    tripEvent.replaceChild(tripDayEventContent.getElement(), tripDayEventContentEdit.getElement());
+  });
+
+  render(tripEvent, tripDayEventContent, RenderPosition.BEFOREEND);
 };
 
 renderTripInfo();

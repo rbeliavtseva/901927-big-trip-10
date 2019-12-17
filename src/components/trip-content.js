@@ -1,6 +1,6 @@
 import {createElement} from '../utils/render.js';
 
-export default class TripContent {
+class TripContent {
   constructor() {
     this._element = null;
   }
@@ -24,3 +24,5 @@ export default class TripContent {
     this._element = null;
   }
 }
+
+export {TripContent};
