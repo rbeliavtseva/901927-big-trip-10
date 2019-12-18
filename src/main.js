@@ -39,6 +39,8 @@ const renderSorting = () => {
 
 const renderTripContentList = () => {
   render(tripEventsElement, new TripContent(), RenderPosition.BEFOREEND);
+  const eventsListElement = tripEventsElement.querySelector(`.trip-days`);
+  return eventsListElement;
 };
 
 const events = generateEvents(NUMBER_OF_EVENTS);
@@ -67,13 +69,13 @@ const renderDayOfTrip = (day) => {
     renderDayEvents(filteredEvents, tripEventsList);
   }
 
-  render(eventsListElement, newDay, RenderPosition.BEFOREEND);
+  render(renderTripContentList(), newDay, RenderPosition.BEFOREEND);
 };
 
 /**
  * Функция заполнения событиями дня
- * @param {*} filteredEvents - массив событий, отфильтрованных по конкретному дню
- * @param {*} tripEventsList - контейнер
+ * @param {array} filteredEvents - массив событий, отфильтрованных по конкретному дню
+ * @param {element} tripEventsList - контейнер
  */
 const renderDayEvents = (filteredEvents, tripEventsList) => {
   filteredEvents.forEach((event) => {
@@ -87,12 +89,12 @@ const renderDayEvents = (filteredEvents, tripEventsList) => {
 
 /**
  * Функция рендерит два типа карточки для каждого ивента - сокращенную и форму редактирования
- * @param {*} event - одиночное событие из массива событий одного дня
- * @param {*} tripEvent - контейнер
+ * @param {object} singleEvent - одиночное событие из массива событий одного дня
+ * @param {element} tripEvent - контейнер
  */
-const renderTripDayEventContent = (event, tripEvent) => {
-  const tripDayEventContent = new CardEventContent(event);
-  const tripDayEventContentEdit = new Event(event);
+const renderTripDayEventContent = (singleEvent, tripEvent) => {
+  const tripDayEventContent = new CardEventContent(singleEvent);
+  const tripDayEventContentEdit = new Event(singleEvent);
 
   const rollupEventBtn = tripDayEventContent.getElement().querySelector(`.event__rollup-btn`);
   rollupEventBtn.addEventListener(`click`, () => {
@@ -112,5 +114,4 @@ renderMenu();
 renderFilter();
 renderSorting();
 renderTripContentList();
-const eventsListElement = tripEventsElement.querySelector(`.trip-days`);
 renderCards(DAYS_COUNT);

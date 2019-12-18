@@ -3,13 +3,13 @@ import {MS, TIME} from '../consts.js';
 /**
  * Функция преобразования чисел меньше 10 в формат `0x`
  * @param {number} number Любое число
- * @return {*} Возвращает строку или число
+ * @return {string} Возвращает строку
  */
 const pad = (number) => {
   if (number < 10) {
     return `0` + number;
   }
-  return number;
+  return number.toString();
 };
 
 /**
