@@ -1,14 +1,14 @@
 import {createElement} from '../utils/render.js';
 
-class TripContent {
+class CardEvent {
   constructor() {
     this._element = null;
   }
 
   getTemplate() {
     return (
-      `<ul class="trip-days">
-      </ul>`
+      `<li class="trip-events__item">
+      </li>`
     );
   }
 
@@ -26,4 +26,4 @@ class TripContent {
   }
 }
 
-export {TripContent};
+export {CardEvent};

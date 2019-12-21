@@ -1,75 +1,40 @@
-import {formatTime, toCardTimePassedFormat} from '../util.js';
+import {createElement} from '../utils/render.js';
+import {toShortDateTimeFormat, addDaysToDate} from '../utils/date-time-format.js';
 
-const createOfferMarkup = (offer) => {
-  const {name, price} = offer;
+class TripCardDay {
+  constructor(day, tripInfoData) {
+    this._day = day;
+    this._tripInfoData = tripInfoData;
+    this._element = null;
+  }
 
-  return (
-    `<li class="event__offer">
-      <span class="event__offer-title">${name}</span>
-      &plus;
-      &euro;&nbsp;<span class="event__offer-price">${price}</span>
-    </li>`
-  );
-};
-
-const createEventMarkup = (eventData) => {
-  const {eventType, date, offers, price} = eventData;
-
-  const offersMarkup = offers.length > 0
-    ? offers.map((it) => createOfferMarkup(it)).join(`\n`)
-    : ``;
-
-  return (
-    `<li class="trip-events__item">
-      <div class="event">
-        <div class="event__type">
-          <img class="event__type-icon" width="42" height="42" src="img/icons/${eventType}.png" alt="Event type icon">
-        </div>
-        <h3 class="event__title">Taxi to airport</h3>
-
-        <div class="event__schedule">
-          <p class="event__time">
-            <time class="event__start-time" datetime="${new Date(date.eventStartDate).toISOString()}">${formatTime(date.eventStartDate)}</time>
-            &mdash;
-            <time class="event__end-time" datetime="${new Date(date.eventEndDate).toISOString()}">${formatTime(date.eventEndDate)}</time>
-          </p>
-          <p class="event__duration">${toCardTimePassedFormat(date.eventStartDate, date.eventEndDate)}</p>
+  getTemplate() {
+    return (
+      `<li class="trip-days__item  day">
+        <div class="day__info">
+          <span class="day__counter">${this._day + 1}</span>
+          <time class="day__date" datetime="2019-03-18">${toShortDateTimeFormat(addDaysToDate(this._tripInfoData, this._day))}</time>
         </div>
 
-        <p class="event__price">
-          &euro;&nbsp;<span class="event__price-value">${price}</span>
-        </p>
+        <ul class="trip-events__list">
 
-        <h4 class="visually-hidden">Offers:</h4>
-        <ul class="event__selected-offers">
-          ${offersMarkup}
         </ul>
+      </li>`
+    );
+  }
 
-        <button class="event__rollup-btn" type="button">
-          <span class="visually-hidden">Open event</span>
-        </button>
-      </div>
-    </li>`
-  );
-};
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
 
-export const createTripCardTemplate = (events, day) => {
+    return this._element;
+  }
 
-  const eventsMarkup = events.length > 0
-    ? events.map((it) => createEventMarkup(it)).join(`\n`)
-    : ``;
+  removeElement() {
+    this._element.remove();
+    this._element = null;
+  }
+}
 
-  return (
-    `<li class="trip-days__item  day">
-      <div class="day__info">
-        <span class="day__counter">${day + 1}</span>
-        <time class="day__date" datetime="2019-03-18">MAR 18</time>
-      </div>
-
-      <ul class="trip-events__list">
-        ${eventsMarkup}
-      </ul>
-    </li>
-  </li>`
-  );
-};
+export {TripCardDay};

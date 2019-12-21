@@ -38,4 +38,27 @@ const MS = 1000;
 
 const TIME = 60;
 
-export {CURRENT_YEAR, CURRENT_MONTH, Hours, Minutes, Dates, NumberOfSentences, NumberOfOptions, NUMBER_OF_PICTURES, AmountOfPrice, MS, TIME};
+const DAYS_COUNT = 4;
+const NUMBER_OF_EVENTS = 4;
+
+const RenderPosition = {
+  AFTERBEGIN: `afterbegin`,
+  BEFOREEND: `beforeend`
+};
+
+export {
+  CURRENT_YEAR,
+  CURRENT_MONTH,
+  Hours,
+  Minutes,
+  Dates,
+  NumberOfSentences,
+  NumberOfOptions,
+  NUMBER_OF_PICTURES,
+  AmountOfPrice,
+  MS,
+  TIME,
+  DAYS_COUNT,
+  NUMBER_OF_EVENTS,
+  RenderPosition
+};
