@@ -46,6 +46,10 @@ const RenderPosition = {
   BEFOREEND: `beforeend`
 };
 
+const Keycodes = {
+  ESC_KEYCODE: 27
+};
+
 export {
   CURRENT_YEAR,
   CURRENT_MONTH,
@@ -60,5 +64,6 @@ export {
   TIME,
   DAYS_COUNT,
   NUMBER_OF_EVENTS,
-  RenderPosition
+  RenderPosition,
+  Keycodes
 };

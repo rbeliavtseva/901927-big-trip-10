@@ -11,7 +11,7 @@ import {generateEvents, tripInfoData} from './mock/event.js';
 import {generateFilters} from './mock/filter.js';
 import {generateMenuItems} from './mock/menu.js';
 import {render} from './utils/render.js';
-import {RenderPosition, DAYS_COUNT, NUMBER_OF_EVENTS} from './consts.js';
+import {RenderPosition, DAYS_COUNT, NUMBER_OF_EVENTS, Keycodes} from './consts.js';
 
 const siteHeaderElement = document.querySelector(`.page-header`);
 const tripInfoSection = siteHeaderElement.querySelector(`.trip-info`);
@@ -96,14 +96,23 @@ const renderTripDayEventContent = (singleEvent, tripEvent) => {
   const tripDayEventContent = new CardEventContent(singleEvent);
   const tripDayEventContentEdit = new Event(singleEvent);
 
+  const onEscReplaceElements = (evt) => {
+    if (evt.keyCode === Keycodes.ESC_KEYCODE) {
+      tripEvent.replaceChild(tripDayEventContent.getElement(), tripDayEventContentEdit.getElement());
+      document.removeEventListener(`keydown`, onEscReplaceElements);
+    }
+  };
+
   const rollupEventBtn = tripDayEventContent.getElement().querySelector(`.event__rollup-btn`);
   rollupEventBtn.addEventListener(`click`, () => {
     tripEvent.replaceChild(tripDayEventContentEdit.getElement(), tripDayEventContent.getElement());
+    document.addEventListener(`keydown`, onEscReplaceElements);
   });
 
   const editEventForm = tripDayEventContentEdit.getElement();
   editEventForm.addEventListener(`submit`, () => {
     tripEvent.replaceChild(tripDayEventContent.getElement(), tripDayEventContentEdit.getElement());
+    document.removeEventListener(`keydown`, onEscReplaceElements);
   });
 
   render(tripEvent, tripDayEventContent, RenderPosition.BEFOREEND);
