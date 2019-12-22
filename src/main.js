@@ -7,6 +7,7 @@ import {Event} from './components/event.js';
 import {TripCardDay} from './components/card.js';
 import {CardEvent} from './components/card-event.js';
 import {CardEventContent} from './components/card-event-content.js';
+import {FirstEventMessage} from './components/first-event-message';
 import {generateEvents, tripInfoData} from './mock/event.js';
 import {generateFilters} from './mock/filter.js';
 import {generateMenuItems} from './mock/menu.js';
@@ -44,6 +45,10 @@ const renderTripContentList = () => {
 };
 
 const events = generateEvents(NUMBER_OF_EVENTS);
+
+const renderFirstEventMessage = () => {
+  render(tripEventsElement, new FirstEventMessage(), RenderPosition.BEFOREEND);
+};
 
 /**
  * Функция рендерит все карточки-контейнеры для каждого дня путешествия
@@ -122,5 +127,8 @@ renderTripInfo();
 renderMenu();
 renderFilter();
 renderSorting();
-renderTripContentList();
-renderCards(DAYS_COUNT);
+if (events.length > 0) {
+  renderCards(DAYS_COUNT);
+} else {
+  renderFirstEventMessage();
+}
