@@ -131,10 +131,12 @@ const renderTripDayEventContent = (singleEvent, tripEvent) => {
 /**
  * Функция проверяет наличие существующих событий (длину массива events)
  * и в зависимости от результата рендерит карточки событий, либо сообщение о добавлении нового события
+ * @param {array} eventsArray Массив сгенерированных событий
+ * @param {number} days Число дней путешествия
  */
-const checkExistingEvents = () => {
-  if (events.length > 0) {
-    renderCards(DAYS_COUNT);
+const checkExistingEvents = (eventsArray, days) => {
+  if (eventsArray.length > 0) {
+    renderCards(days);
   } else {
     renderFirstEventMessage();
   }
@@ -144,4 +146,4 @@ renderTripInfo();
 renderMenu();
 renderFilter();
 renderSorting();
-checkExistingEvents();
+checkExistingEvents(events, DAYS_COUNT);
