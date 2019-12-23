@@ -7,11 +7,12 @@ import {Event} from './components/event.js';
 import {TripCardDay} from './components/card.js';
 import {CardEvent} from './components/card-event.js';
 import {CardEventContent} from './components/card-event-content.js';
+import {FirstEventMessage} from './components/first-event-message';
 import {generateEvents, tripInfoData} from './mock/event.js';
 import {generateFilters} from './mock/filter.js';
 import {generateMenuItems} from './mock/menu.js';
 import {render} from './utils/render.js';
-import {RenderPosition, DAYS_COUNT, NUMBER_OF_EVENTS} from './consts.js';
+import {RenderPosition, DAYS_COUNT, NUMBER_OF_EVENTS, Keycodes} from './consts.js';
 
 const siteHeaderElement = document.querySelector(`.page-header`);
 const tripInfoSection = siteHeaderElement.querySelector(`.trip-info`);
@@ -44,6 +45,10 @@ const renderTripContentList = () => {
 };
 
 const events = generateEvents(NUMBER_OF_EVENTS);
+
+const renderFirstEventMessage = () => {
+  render(tripEventsElement, new FirstEventMessage(), RenderPosition.BEFOREEND);
+};
 
 /**
  * Функция рендерит все карточки-контейнеры для каждого дня путешествия
@@ -96,22 +101,49 @@ const renderTripDayEventContent = (singleEvent, tripEvent) => {
   const tripDayEventContent = new CardEventContent(singleEvent);
   const tripDayEventContentEdit = new Event(singleEvent);
 
+  /**
+   * Функция принимает событие и проверяет значение свойства keyCode,
+   * в случае совпадения заменяя существующий элемент на новый, а затем снимает обработчик события
+   * @param {object} evt - событие
+   */
+  const onEscReplaceElements = (evt) => {
+    if (evt.keyCode === Keycodes.ESC_KEYCODE) {
+      tripEvent.replaceChild(tripDayEventContent.getElement(), tripDayEventContentEdit.getElement());
+      document.removeEventListener(`keydown`, onEscReplaceElements);
+    }
+  };
+
   const rollupEventBtn = tripDayEventContent.getElement().querySelector(`.event__rollup-btn`);
   rollupEventBtn.addEventListener(`click`, () => {
     tripEvent.replaceChild(tripDayEventContentEdit.getElement(), tripDayEventContent.getElement());
+    document.addEventListener(`keydown`, onEscReplaceElements);
   });
 
   const editEventForm = tripDayEventContentEdit.getElement();
   editEventForm.addEventListener(`submit`, () => {
     tripEvent.replaceChild(tripDayEventContent.getElement(), tripDayEventContentEdit.getElement());
+    document.removeEventListener(`keydown`, onEscReplaceElements);
   });
 
   render(tripEvent, tripDayEventContent, RenderPosition.BEFOREEND);
+};
+
+/**
+ * Функция проверяет наличие существующих событий (длину массива events)
+ * и в зависимости от результата рендерит карточки событий, либо сообщение о добавлении нового события
+ * @param {array} eventsArray Массив сгенерированных событий
+ * @param {number} days Число дней путешествия
+ */
+const checkExistingEvents = (eventsArray, days) => {
+  if (eventsArray.length > 0) {
+    renderCards(days);
+  } else {
+    renderFirstEventMessage();
+  }
 };
 
 renderTripInfo();
 renderMenu();
 renderFilter();
 renderSorting();
-renderTripContentList();
-renderCards(DAYS_COUNT);
+checkExistingEvents(events, DAYS_COUNT);
