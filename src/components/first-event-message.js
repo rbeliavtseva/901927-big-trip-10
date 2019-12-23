@@ -1,27 +1,14 @@
-import {createElement} from '../utils/render.js';
+import {AbstractComponent} from './abstract-component.js';
 
-class FirstEventMessage {
+class FirstEventMessage extends AbstractComponent {
   constructor() {
-    this._element = null;
+    super();
   }
 
   getTemplate() {
     return (
       `<p class="trip-events__msg">Click New Event to create your first point</p>`
     );
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element.remove();
-    this._element = null;
   }
 }
 

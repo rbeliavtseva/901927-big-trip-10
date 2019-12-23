@@ -1,4 +1,4 @@
-import {createElement} from '../utils/render.js';
+import {AbstractComponent} from './abstract-component.js';
 
 const createMenuMarkup = (item, isActive) => {
   const {name} = item;
@@ -13,10 +13,10 @@ const createMenuMarkup = (item, isActive) => {
   );
 };
 
-class SiteMenu {
+class SiteMenu extends AbstractComponent {
   constructor(menuItems) {
+    super();
     this._menuItems = menuItems;
-    this._element = null;
   }
 
   getTemplate() {
@@ -27,19 +27,6 @@ class SiteMenu {
         ${menuMarkup}
       </nav>`
     );
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element.remove();
-    this._element = null;
   }
 }
 

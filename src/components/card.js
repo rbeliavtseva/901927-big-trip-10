@@ -1,11 +1,11 @@
-import {createElement} from '../utils/render.js';
+import {AbstractComponent} from './abstract-component.js';
 import {toShortDateTimeFormat, addDaysToDate} from '../utils/date-time-format.js';
 
-class TripCardDay {
+class TripCardDay extends AbstractComponent {
   constructor(day, tripInfoData) {
+    super();
     this._day = day;
     this._tripInfoData = tripInfoData;
-    this._element = null;
   }
 
   getTemplate() {
@@ -21,19 +21,6 @@ class TripCardDay {
         </ul>
       </li>`
     );
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element.remove();
-    this._element = null;
   }
 }
 
