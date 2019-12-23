@@ -101,6 +101,11 @@ const renderTripDayEventContent = (singleEvent, tripEvent) => {
   const tripDayEventContent = new CardEventContent(singleEvent);
   const tripDayEventContentEdit = new Event(singleEvent);
 
+  /**
+   * Функция принимает событие и проверяет значение свойства keyCode,
+   * в случае совпадения заменяя существующий элемент на новый, а затем снимает обработчик события
+   * @param {object} evt - событие
+   */
   const onEscReplaceElements = (evt) => {
     if (evt.keyCode === Keycodes.ESC_KEYCODE) {
       tripEvent.replaceChild(tripDayEventContent.getElement(), tripDayEventContentEdit.getElement());
@@ -123,12 +128,20 @@ const renderTripDayEventContent = (singleEvent, tripEvent) => {
   render(tripEvent, tripDayEventContent, RenderPosition.BEFOREEND);
 };
 
+/**
+ * Функция проверяет наличие существующих событий (длину массива events)
+ * и в зависимости от результата рендерит карточки событий, либо сообщение о добавлении нового события
+ */
+const checkExistingEvents = () => {
+  if (events.length > 0) {
+    renderCards(DAYS_COUNT);
+  } else {
+    renderFirstEventMessage();
+  }
+};
+
 renderTripInfo();
 renderMenu();
 renderFilter();
 renderSorting();
-if (events.length > 0) {
-  renderCards(DAYS_COUNT);
-} else {
-  renderFirstEventMessage();
-}
+checkExistingEvents();
