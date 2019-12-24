@@ -113,17 +113,28 @@ const renderTripDayEventContent = (singleEvent, tripEvent) => {
     }
   };
 
-  const rollupEventBtn = tripDayEventContent.getElement().querySelector(`.event__rollup-btn`);
-  rollupEventBtn.addEventListener(`click`, () => {
+  /**
+   * Функция по событию отправки формы заменяет существующий элемент на новый,
+   * а затем снимает обработчик события закрытия по ESC
+   */
+  const onRollupButtonClick = () => {
     tripEvent.replaceChild(tripDayEventContentEdit.getElement(), tripDayEventContent.getElement());
     document.addEventListener(`keydown`, onEscReplaceElements);
-  });
+  };
 
-  const editEventForm = tripDayEventContentEdit.getElement();
-  editEventForm.addEventListener(`submit`, () => {
+  tripDayEventContent.setClickHandler(onRollupButtonClick);
+
+
+  /**
+   * Функция по событию отправки формы заменяет существующий элемент на новый,
+   * а затем снимает обработчик события закрытия по ESC
+   */
+  const onTripEditFormSubmit = () => {
     tripEvent.replaceChild(tripDayEventContent.getElement(), tripDayEventContentEdit.getElement());
     document.removeEventListener(`keydown`, onEscReplaceElements);
-  });
+  };
+
+  tripDayEventContentEdit.setSubmitHandler(onTripEditFormSubmit);
 
   render(tripEvent, tripDayEventContent, RenderPosition.BEFOREEND);
 };

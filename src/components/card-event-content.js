@@ -20,6 +20,10 @@ class CardEventContent extends AbstractComponent {
     this._eventData = eventData;
   }
 
+  setClickHandler(handler) {
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, handler);
+  }
+
   getTemplate() {
     const {eventType, date, offers, price, city} = this._eventData;
 

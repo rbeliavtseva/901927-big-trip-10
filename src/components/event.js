@@ -34,6 +34,10 @@ class Event extends AbstractComponent {
     this._eventData = eventData;
   }
 
+  setSubmitHandler(handler) {
+    this.getElement().addEventListener(`submit`, handler);
+  }
+
   getTemplate() {
     const {eventType, city, date, offers, pictures, description, price} = this._eventData;
 
