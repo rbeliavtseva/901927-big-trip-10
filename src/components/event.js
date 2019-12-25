@@ -1,5 +1,5 @@
+import {AbstractComponent} from './abstract-component.js';
 import {toEventDateFormat} from '../utils/date-time-format.js';
-import {createElement} from '../utils/render.js';
 import {checkEventTypeArticle, toUppercaseFirstLetter} from '../utils/events.js';
 
 const createOfferMarkup = (offer) => {
@@ -28,10 +28,14 @@ const createPicturesMarkup = (pictures) => {
   );
 };
 
-class Event {
+class Event extends AbstractComponent {
   constructor(eventData) {
+    super();
     this._eventData = eventData;
-    this._element = null;
+  }
+
+  setSubmitHandler(handler) {
+    this.getElement().addEventListener(`submit`, handler);
   }
 
   getTemplate() {
@@ -171,19 +175,6 @@ class Event {
           </section>
         </form>`
     );
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element.remove();
-    this._element = null;
   }
 }
 

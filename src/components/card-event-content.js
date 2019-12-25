@@ -1,5 +1,5 @@
+import {AbstractComponent} from './abstract-component.js';
 import {formatTime, toCardTimePassedFormat} from '../utils/date-time-format.js';
-import {createElement} from '../utils/render.js';
 import {checkEventTypeArticle, toUppercaseFirstLetter} from '../utils/events.js';
 
 const createOfferMarkup = (offer) => {
@@ -14,10 +14,14 @@ const createOfferMarkup = (offer) => {
   );
 };
 
-class CardEventContent {
+class CardEventContent extends AbstractComponent {
   constructor(eventData) {
+    super();
     this._eventData = eventData;
-    this._element = null;
+  }
+
+  setClickHandler(handler) {
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, handler);
   }
 
   getTemplate() {
@@ -57,19 +61,6 @@ class CardEventContent {
         </button>
       </div>`
     );
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element.remove();
-    this._element = null;
   }
 }
 

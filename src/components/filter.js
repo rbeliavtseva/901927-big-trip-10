@@ -1,4 +1,4 @@
-import {createElement} from '../utils/render.js';
+import {AbstractComponent} from './abstract-component.js';
 
 const createFilterMarkup = (filter, isChecked) => {
   const {name} = filter;
@@ -19,10 +19,10 @@ const createFilterMarkup = (filter, isChecked) => {
   );
 };
 
-class Filters {
+class Filters extends AbstractComponent {
   constructor(filters) {
+    super();
     this._filters = filters;
-    this._element = null;
   }
 
   getTemplate() {
@@ -32,19 +32,6 @@ class Filters {
         ${filtersMarkup}
       </form>`
     );
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element.remove();
-    this._element = null;
   }
 }
 

@@ -1,7 +1,8 @@
-import {createElement} from '../utils/render.js';
+import {AbstractComponent} from './abstract-component.js';
 
-class CardEvent {
+class CardEvent extends AbstractComponent {
   constructor() {
+    super();
     this._element = null;
   }
 
@@ -10,19 +11,6 @@ class CardEvent {
       `<li class="trip-events__item">
       </li>`
     );
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element.remove();
-    this._element = null;
   }
 }
 

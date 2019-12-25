@@ -1,10 +1,10 @@
+import {AbstractComponent} from './abstract-component.js';
 import {toTripInfoDateFormat} from '../utils/date-time-format.js';
-import {createElement} from '../utils/render.js';
 
-export default class TripInfo {
+class TripInfo extends AbstractComponent {
   constructor(eventData) {
+    super();
     this._eventData = eventData;
-    this._element = null;
   }
 
   getTemplate() {
@@ -17,19 +17,6 @@ export default class TripInfo {
         <p class="trip-info__dates">${toTripInfoDateFormat(date.startDate, date.endDate)}</p>
       </div>`
     );
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element.remove();
-    this._element = null;
   }
 }
 
