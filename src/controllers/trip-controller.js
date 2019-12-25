@@ -1,4 +1,3 @@
-import {AbstractComponent} from '../components/abstract-component.js';
 import {render} from '../utils/render.js';
 import {TripCardDay} from '../components/card.js';
 import {CardEvent} from '../components/card-event.js';
@@ -8,13 +7,12 @@ import {Event} from '../components/event.js';
 import {tripInfoData} from '../mock/event.js';
 import {RenderPosition, Keycodes} from '../consts.js';
 
-class TripController extends AbstractComponent {
+class TripController {
   constructor(container) {
-    super();
     this._container = container;
   }
 
-  render(eventsArray, days) {
+  render(events, numberOfDays) {
     /**
      * Функция рендерит все карточки-контейнеры для каждого дня путешествия
      * @param {number} numberOfCards Количество дней путешествия
@@ -34,7 +32,7 @@ class TripController extends AbstractComponent {
     const renderDayOfTrip = (day) => {
       const newDay = new TripCardDay(day, tripInfoData.date.startDate);
       const tripEventsList = newDay.getElement().querySelector(`.trip-events__list`);
-      const filteredEvents = eventsArray.filter((it) => it.date.day === day);
+      const filteredEvents = events.filter((it) => it.date.day === day);
       if (filteredEvents.length > 0) {
         renderDayEvents(filteredEvents, tripEventsList);
       }
@@ -111,17 +109,17 @@ class TripController extends AbstractComponent {
     /**
      * Функция проверяет наличие существующих событий (длину массива events)
      * и в зависимости от результата рендерит карточки событий, либо сообщение о добавлении нового события
-     * @param {array} events Массив сгенерированных событий
-     * @param {number} numberOfDays Число дней путешествия
+     * @param {array} tripEvents Массив сгенерированных событий
+     * @param {number} daysCount Число дней путешествия
      */
-    const checkExistingEvents = (events, numberOfDays) => {
-      if (events.length > 0) {
-        renderCards(numberOfDays);
+    const checkExistingEvents = (tripEvents, daysCount) => {
+      if (tripEvents.length > 0) {
+        renderCards(daysCount);
       } else {
         renderFirstEventMessage();
       }
     };
-    checkExistingEvents(eventsArray, days);
+    checkExistingEvents(events, numberOfDays);
   }
 }
 
