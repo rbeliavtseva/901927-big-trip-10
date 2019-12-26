@@ -1,5 +1,5 @@
 import {AbstractComponent} from './abstract-component.js';
-import {formatTime, toCardTimePassedFormat} from '../utils/date-time-format.js';
+import {formatTime} from '../utils/date-time-format.js';
 import {checkEventTypeArticle, toUppercaseFirstLetter} from '../utils/events.js';
 
 const createOfferMarkup = (offer) => {
@@ -25,7 +25,7 @@ class CardEventContent extends AbstractComponent {
   }
 
   getTemplate() {
-    const {eventType, date, offers, price, city} = this._eventData;
+    const {eventType, date, offers, price, city, duration} = this._eventData;
 
     const offersMarkup = offers.length > 0
       ? offers.map((it) => createOfferMarkup(it)).join(`\n`)
@@ -44,7 +44,7 @@ class CardEventContent extends AbstractComponent {
             &mdash;
             <time class="event__end-time" datetime="${new Date(date.eventEndDate).toISOString()}">${formatTime(date.eventEndDate)}</time>
           </p>
-          <p class="event__duration">${toCardTimePassedFormat(date.eventStartDate, date.eventEndDate)}</p>
+          <p class="event__duration">${duration}</p>
         </div>
 
         <p class="event__price">

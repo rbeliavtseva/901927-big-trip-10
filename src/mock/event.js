@@ -1,4 +1,5 @@
 import * as consts from '../consts.js';
+import {toCardTimePassedFormat} from '../utils/date-time-format.js';
 
 const EventTypes = {
   Transport: [
@@ -162,14 +163,17 @@ const generatePrice = () => {
  * @return {object} Возвращает объект
  */
 const generateEvent = () => {
+  const randomDate = getRandomDate();
+
   return {
     eventType: getRandomArrayItem(EventTypes.Transport.concat(EventTypes.Activity)),
     city: getRandomArrayItem(Cities),
-    date: getRandomDate(),
+    date: randomDate,
     offers: generateOffers(Offers),
     pictures: generatePictures(consts.NUMBER_OF_PICTURES),
     description: generateDescriptionText(),
-    price: generatePrice()
+    price: generatePrice(),
+    duration: toCardTimePassedFormat(randomDate.eventStartDate, randomDate.eventEndDate)
   };
 };
 

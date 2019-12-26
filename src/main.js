@@ -1,7 +1,6 @@
 import {TripInfo} from './components/trip-info.js';
 import {SiteMenu} from './components/menu.js';
 import {Filters} from './components/filter.js';
-import {SortTrip} from './components/sort.js';
 import {TripContent} from './components/trip-content.js';
 import {generateEvents, tripInfoData} from './mock/event.js';
 import {generateFilters} from './mock/filter.js';
@@ -30,10 +29,6 @@ const renderFilter = () => {
   render(tripControlsElement, new Filters(filters), RenderPosition.BEFOREEND);
 };
 
-const renderSorting = () => {
-  render(tripEventsElement, new SortTrip(), RenderPosition.BEFOREEND);
-};
-
 const renderTripContentList = () => {
   render(tripEventsElement, new TripContent(), RenderPosition.BEFOREEND);
   const eventsListElement = tripEventsElement.querySelector(`.trip-days`);
@@ -45,6 +40,5 @@ const events = generateEvents(NUMBER_OF_EVENTS);
 renderTripInfo();
 renderMenu();
 renderFilter();
-renderSorting();
 const tripController = new TripController((renderTripContentList()));
 tripController.render(events, DAYS_COUNT);
