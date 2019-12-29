@@ -145,7 +145,7 @@ class TripController {
     };
 
     /**
-     * Функция удаляет элементы карточек точек маршрута перед повторным рендером во время выполнения сортировки
+     * Функция удаляет элементы карточек точек маршрута
      */
     const removeElements = () => {
       const eventElements = this._container.querySelectorAll(`.trip-events__item`);
