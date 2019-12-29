@@ -4,7 +4,7 @@ import {CardEvent} from '../components/card-event.js';
 import {CardEventContent} from '../components/card-event-content.js';
 import {FirstEventMessage} from '../components/first-event-message';
 import {Event} from '../components/event.js';
-import {SortTrip} from '../components/sort.js';
+import {Sort} from '../components/sort.js';
 import {tripInfoData} from '../mock/event.js';
 import {RenderPosition, Keycodes, SortType} from '../consts.js';
 
@@ -14,7 +14,7 @@ class TripController {
   }
 
   render(events, numberOfDays) {
-    const sortTrip = new SortTrip();
+    const sortTrip = new Sort();
 
     const renderSorting = () => {
       render(this._container, sortTrip, RenderPosition.BEFOREEND);
@@ -116,7 +116,7 @@ class TripController {
     /**
      * Функция проверяет наличие существующих событий (длину массива events)
      * и в зависимости от результата рендерит карточки событий, либо сообщение о добавлении нового события
-     * @param {array} tripEvents Массив сгенерированных событий
+     * @param {array} tripEvents Массив событий
      * @return {boolean} В зависимости от наличия событий возвращает true или false
      */
     const checkExistingEvents = (tripEvents) => {
@@ -130,7 +130,7 @@ class TripController {
 
     /**
      * Функция сортирует элементы по убывающему значению цены
-     * @param {array} eventItems Массив сгенерированных событий
+     * @param {array} eventItems Массив событий
      */
     const sortEventsByPrice = (eventItems) => {
       eventItems.sort((a, b) => b.price - a.price);
@@ -138,14 +138,14 @@ class TripController {
 
     /**
      * Функция сортирует элементы по убывающему значению временного промежутка между датами
-     * @param {array} eventItems Массив сгенерированных событий
+     * @param {array} eventItems Массив событий
      */
     const sortEventsByDuration = (eventItems) => {
       eventItems.sort((a, b) => (b.date.eventEndDate - b.date.eventStartDate) - (a.date.eventEndDate - a.date.eventStartDate));
     };
 
     /**
-     * Функция удаляет элементы
+     * Функция удаляет элементы карточек точек маршрута перед повторным рендером во время выполнения сортировки
      */
     const removeElements = () => {
       const eventElements = this._container.querySelectorAll(`.trip-events__item`);
@@ -164,7 +164,7 @@ class TripController {
 
     /**
      * Функция сортировки элементов в зависимости от типа сортировки
-     * @param {string} sortingType Массив сгенерированных событий
+     * @param {string} sortingType Массив событий
      */
     const sortEvents = (sortingType) => {
       const eventsCopy = [...events];

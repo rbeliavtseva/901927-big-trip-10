@@ -1,7 +1,7 @@
 import {AbstractComponent} from './abstract-component.js';
 import {SortType} from '../consts.js';
 
-class SortTrip extends AbstractComponent {
+class Sort extends AbstractComponent {
   constructor() {
     super();
   }
@@ -39,9 +39,9 @@ class SortTrip extends AbstractComponent {
 
   /**
    * Функция навешивает обработчики событий на элементы сортировки
-   * @param {function} handler Функция, которая будет выполняться при клике на элемент
+   * @param {function} bind Функция, которая будет выполняться при клике на элемент
    */
-  setSortTypeChangeHandler(handler) {
+  setSortTypeChangeHandler(bind) {
     const sortFields = this.getElement().querySelectorAll(`input`);
     if (sortFields.length > 0) {
       sortFields.forEach((field) => {
@@ -54,11 +54,11 @@ class SortTrip extends AbstractComponent {
 
           this._currentSortType = sortType;
 
-          handler(this._currentSortType);
+          bind(this._currentSortType);
         });
       });
     }
   }
 }
 
-export {SortTrip};
+export {Sort};
