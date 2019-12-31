@@ -4,8 +4,9 @@ import {CardEvent} from '../components/card-event.js';
 import {CardEventContent} from '../components/card-event-content.js';
 import {FirstEventMessage} from '../components/first-event-message';
 import {Event} from '../components/event.js';
+import {Sort} from '../components/sort.js';
 import {tripInfoData} from '../mock/event.js';
-import {RenderPosition, Keycodes} from '../consts.js';
+import {RenderPosition, Keycodes, SortType} from '../consts.js';
 
 class TripController {
   constructor(container) {
@@ -13,6 +14,12 @@ class TripController {
   }
 
   render(events, numberOfDays) {
+    const sortTrip = new Sort();
+
+    const renderSorting = () => {
+      render(this._container, sortTrip, RenderPosition.BEFOREEND);
+    };
+
     /**
      * Функция рендерит все карточки-контейнеры для каждого дня путешествия
      * @param {number} numberOfCards Количество дней путешествия
@@ -109,17 +116,87 @@ class TripController {
     /**
      * Функция проверяет наличие существующих событий (длину массива events)
      * и в зависимости от результата рендерит карточки событий, либо сообщение о добавлении нового события
-     * @param {array} tripEvents Массив сгенерированных событий
-     * @param {number} daysCount Число дней путешествия
+     * @param {array} tripEvents Массив событий
+     * @return {boolean} В зависимости от наличия событий возвращает true или false
      */
-    const checkExistingEvents = (tripEvents, daysCount) => {
+    const checkExistingEvents = (tripEvents) => {
       if (tripEvents.length > 0) {
-        renderCards(daysCount);
+        return true;
       } else {
         renderFirstEventMessage();
+        return false;
       }
     };
-    checkExistingEvents(events, numberOfDays);
+
+    /**
+     * Функция сортирует элементы по убывающему значению цены
+     * @param {array} eventItems Массив событий
+     */
+    const sortEventsByPrice = (eventItems) => {
+      eventItems.sort((a, b) => b.price - a.price);
+    };
+
+    /**
+     * Функция сортирует элементы по убывающему значению временного промежутка между датами
+     * @param {array} eventItems Массив событий
+     */
+    const sortEventsByDuration = (eventItems) => {
+      eventItems.sort((a, b) => (b.date.eventEndDate - b.date.eventStartDate) - (a.date.eventEndDate - a.date.eventStartDate));
+    };
+
+    /**
+     * Функция удаляет элементы карточек точек маршрута
+     */
+    const removeElements = () => {
+      const eventElements = this._container.querySelectorAll(`.trip-events__item`);
+      const dayElements = this._container.querySelectorAll(`.day`);
+      if (dayElements.length > 0) {
+        dayElements.forEach((element) => {
+          element.remove();
+        });
+      }
+      if (eventElements.length > 0) {
+        eventElements.forEach((element) => {
+          element.remove();
+        });
+      }
+    };
+
+    /**
+     * Функция сортировки элементов в зависимости от типа сортировки
+     * @param {string} sortingType Массив событий
+     */
+    const sortEvents = (sortingType) => {
+      const eventsCopy = [...events];
+      switch (sortingType) {
+        case SortType.EVENT:
+          if (checkExistingEvents(events)) {
+            removeElements();
+            renderCards(numberOfDays);
+          }
+          break;
+
+        case SortType.PRICE:
+          if (checkExistingEvents(events)) {
+            removeElements();
+            sortEventsByPrice(eventsCopy);
+            renderDayEvents(eventsCopy, this._container);
+          }
+          break;
+
+        case SortType.TIME:
+          if (checkExistingEvents(events)) {
+            removeElements();
+            sortEventsByDuration(eventsCopy);
+            renderDayEvents(eventsCopy, this._container);
+          }
+          break;
+      }
+    };
+
+    renderSorting();
+    sortTrip.setSortTypeChangeHandler(sortEvents);
+    sortEvents(SortType.EVENT);
   }
 }
 

@@ -50,6 +50,12 @@ const Keycodes = {
   ESC_KEYCODE: 27
 };
 
+const SortType = {
+  EVENT: `event`,
+  TIME: `time`,
+  PRICE: `price`
+};
+
 export {
   CURRENT_YEAR,
   CURRENT_MONTH,
@@ -65,5 +71,6 @@ export {
   DAYS_COUNT,
   NUMBER_OF_EVENTS,
   RenderPosition,
-  Keycodes
+  Keycodes,
+  SortType
 };
