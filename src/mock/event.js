@@ -14,7 +14,6 @@ const EventTypes = {
   Activity: [
     `restaurant`,
     `sightseeing`,
-    `trip`,
     `check-in`
   ]
 };
@@ -158,11 +157,16 @@ const generatePrice = () => {
   return getRandomIntegerNumber(consts.AmountOfPrice.MIN, consts.AmountOfPrice.MAX);
 };
 
+const getRandomBoolean = () => {
+  return Boolean(Math.round(Math.random()));
+};
+
 /**
  * Функция генерирует случайное событие
+ * @param {number} eventNumber Порядковый номер точки маршрута
  * @return {object} Возвращает объект
  */
-const generateEvent = () => {
+const generateEvent = (eventNumber) => {
   const randomDate = getRandomDate();
 
   return {
@@ -173,7 +177,9 @@ const generateEvent = () => {
     pictures: generatePictures(consts.NUMBER_OF_PICTURES),
     description: generateDescriptionText(),
     price: generatePrice(),
-    duration: toCardTimePassedFormat(randomDate.eventStartDate, randomDate.eventEndDate)
+    duration: toCardTimePassedFormat(randomDate.eventStartDate, randomDate.eventEndDate),
+    isFavourite: getRandomBoolean(),
+    id: eventNumber
   };
 };
 
@@ -185,7 +191,7 @@ const generateEvent = () => {
 const generateEvents = (number) => {
   return new Array(number)
     .fill(``)
-    .map(generateEvent);
+    .map((_, i) => generateEvent(i));
 };
 
-export {generateEvent, generateEvents, tripInfoData, EventTypes};
+export {generateEvent, generateEvents, tripInfoData, EventTypes, Cities};

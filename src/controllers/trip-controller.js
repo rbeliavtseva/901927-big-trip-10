@@ -1,16 +1,16 @@
 import {render} from '../utils/render.js';
 import {TripCardDay} from '../components/card.js';
 import {CardEvent} from '../components/card-event.js';
-import {CardEventContent} from '../components/card-event-content.js';
 import {FirstEventMessage} from '../components/first-event-message';
-import {Event} from '../components/event.js';
 import {Sort} from '../components/sort.js';
 import {tripInfoData} from '../mock/event.js';
-import {RenderPosition, Keycodes, SortType} from '../consts.js';
+import {RenderPosition, SortType} from '../consts.js';
+import {PointController} from './point-controller.js';
 
 class TripController {
   constructor(container) {
     this._container = container;
+    this._pointControllers = [];
   }
 
   render(events, numberOfDays) {
@@ -56,57 +56,12 @@ class TripController {
       filteredEvents.forEach((event) => {
         const tripDayEvent = new CardEvent();
         const tripEvent = tripDayEvent.getElement();
-        renderTripDayEventContent(event, tripEvent);
+        const pointController = new PointController(tripEvent, this._onDataChange, () => this._onViewChange());
+        this._pointControllers.push(pointController);
+        pointController.render(event);
 
         render(tripEventsList, tripDayEvent, RenderPosition.BEFOREEND);
       });
-    };
-
-    /**
-     * Функция рендерит два типа карточки для каждого ивента - сокращенную и форму редактирования
-     * @param {object} singleEvent - одиночное событие из массива событий одного дня
-     * @param {element} tripEvent - контейнер
-     */
-    const renderTripDayEventContent = (singleEvent, tripEvent) => {
-      const tripDayEventContent = new CardEventContent(singleEvent);
-      const tripDayEventContentEdit = new Event(singleEvent);
-
-      /**
-       * Функция принимает событие и проверяет значение свойства keyCode,
-       * в случае совпадения заменяя существующий элемент на новый, а затем снимает обработчик события
-       * @param {object} evt - событие
-       */
-      const onEscReplaceElements = (evt) => {
-        if (evt.keyCode === Keycodes.ESC_KEYCODE) {
-          tripEvent.replaceChild(tripDayEventContent.getElement(), tripDayEventContentEdit.getElement());
-          document.removeEventListener(`keydown`, onEscReplaceElements);
-        }
-      };
-
-      /**
-       * Функция по событию отправки формы заменяет существующий элемент на новый,
-       * а затем снимает обработчик события закрытия по ESC
-       */
-      const onRollupButtonClick = () => {
-        tripEvent.replaceChild(tripDayEventContentEdit.getElement(), tripDayEventContent.getElement());
-        document.addEventListener(`keydown`, onEscReplaceElements);
-      };
-
-      tripDayEventContent.setClickHandler(onRollupButtonClick);
-
-
-      /**
-       * Функция по событию отправки формы заменяет существующий элемент на новый,
-       * а затем снимает обработчик события закрытия по ESC
-       */
-      const onTripEditFormSubmit = () => {
-        tripEvent.replaceChild(tripDayEventContent.getElement(), tripDayEventContentEdit.getElement());
-        document.removeEventListener(`keydown`, onEscReplaceElements);
-      };
-
-      tripDayEventContentEdit.setSubmitHandler(onTripEditFormSubmit);
-
-      render(tripEvent, tripDayEventContent, RenderPosition.BEFOREEND);
     };
 
     const renderFirstEventMessage = () => {
@@ -197,6 +152,26 @@ class TripController {
     renderSorting();
     sortTrip.setSortTypeChangeHandler(sortEvents);
     sortEvents(SortType.EVENT);
+  }
+
+  /**
+   * Приватный метод, который обновляет поле isFavourite и перерендеривает элемент
+   * на основе нового значения
+   * @param {object} oldPoint - объект
+   * @param {boolean} updatedFavourite Значение атрибута на элементе input
+   */
+  _onDataChange(oldPoint, updatedFavourite) {
+    const newPoint = oldPoint;
+    newPoint.isFavourite = updatedFavourite;
+    this.render(newPoint);
+  }
+
+  /**
+   * Приватный метод, который вызывает для каждого контроллера метод, возвращающий
+   * к дефолтному виду
+   */
+  _onViewChange() {
+    this._pointControllers.forEach((it) => it.setDefaultView());
   }
 }
 
