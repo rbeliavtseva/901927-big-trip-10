@@ -158,12 +158,11 @@ class TripController {
    * Приватный метод, который обновляет поле isFavourite и перерендеривает элемент
    * на основе нового значения
    * @param {object} oldPoint - объект
-   * @param {boolean} updatedFavourite Значение атрибута на элементе input
+   * @param {object} newPoint - объект
    */
-  _onDataChange(oldPoint, updatedFavourite) {
-    const newPoint = oldPoint;
-    newPoint.isFavourite = updatedFavourite;
-    this.render(newPoint);
+  _onDataChange(oldPoint, newPoint) {
+    this._tripDayEventContentEdit._eventData = newPoint;
+    this._tripDayEventContentEdit.rerender();
   }
 
   /**
