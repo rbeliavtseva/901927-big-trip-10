@@ -14,7 +14,6 @@ const EventTypes = {
   Activity: [
     `restaurant`,
     `sightseeing`,
-    `trip`,
     `check-in`
   ]
 };
@@ -34,29 +33,70 @@ sit amet tempus.`;
 
 const Offers = [
   {
+    eventType: [`bus`, `flight`, `ship`, `train`],
     type: `luggage`,
     name: `Add luggage`,
     price: `30`
   },
   {
+    eventType: [`bus`, `flight`, `ship`, `train`, `transport`],
     type: `comfort`,
     name: `Switch to comfort class`,
     price: `100`,
   },
   {
+    eventType: [`flight`, `ship`, `train`],
     type: `meal`,
     name: `Add meal`,
     price: `15`,
   },
   {
+    eventType: [`bus`, `flight`, `ship`, `train`, `transport`],
     type: `seats`,
     name: `Choose seats`,
     price: `5`,
   },
   {
+    eventType: [`train`, `transport`],
     type: `train`,
     name: `Travel by train`,
     price: `40`
+  },
+  {
+    eventType: [`taxi`, `transport`, `sightseeing`],
+    type: `taxi`,
+    name: `Order Uber`,
+    price: `20`
+  },
+  {
+    eventType: [`drive`, `transport`, `sightseeing`],
+    type: `car`,
+    name: `Rent a car`,
+    price: `200`
+  },
+  {
+    eventType: [`restaurant`, `check-in`, `train`],
+    type: `breakfast`,
+    name: `Add breakfast`,
+    price: `30`
+  },
+  {
+    eventType: [`sightseeing`],
+    type: `ticket`,
+    name: `Buy express ticket`,
+    price: `50`
+  },
+  {
+    eventType: [`check-in`],
+    type: `minibar`,
+    name: `Add minibar`,
+    price: `150`
+  },
+  {
+    eventType: [`sightseeing`],
+    type: `guide`,
+    name: `Book a personal guide`,
+    price: `100`
   }
 ];
 
@@ -112,15 +152,11 @@ const getRandomDate = () => {
 
 /**
  * Функция генерирует массив из случайных офферов
- * @param {array} offers Массив из офферов
+ * @param {string} eventType Тип поездки
  * @return {array} Возвращает массив из объектов
  */
-const generateOffers = (offers) => {
-  const generatedOffers = [];
-
-  for (let i = 0; i < getRandomIntegerNumber(consts.NumberOfOptions.MIN, consts.NumberOfOptions.MAX); i++) {
-    generatedOffers.push(getRandomArrayItem(offers));
-  }
+const generateOffers = (eventType) => {
+  const generatedOffers = Offers.filter((offer) => offer.eventType.includes(eventType));
 
   return generatedOffers;
 };
@@ -158,22 +194,30 @@ const generatePrice = () => {
   return getRandomIntegerNumber(consts.AmountOfPrice.MIN, consts.AmountOfPrice.MAX);
 };
 
+const getRandomBoolean = () => {
+  return Boolean(Math.round(Math.random()));
+};
+
 /**
  * Функция генерирует случайное событие
+ * @param {number} eventNumber Порядковый номер точки маршрута
  * @return {object} Возвращает объект
  */
-const generateEvent = () => {
+const generateEvent = (eventNumber) => {
   const randomDate = getRandomDate();
+  const randomEventType = getRandomArrayItem(EventTypes.Transport.concat(EventTypes.Activity));
 
   return {
-    eventType: getRandomArrayItem(EventTypes.Transport.concat(EventTypes.Activity)),
+    eventType: randomEventType,
     city: getRandomArrayItem(Cities),
     date: randomDate,
-    offers: generateOffers(Offers),
+    offers: generateOffers(randomEventType),
     pictures: generatePictures(consts.NUMBER_OF_PICTURES),
     description: generateDescriptionText(),
     price: generatePrice(),
-    duration: toCardTimePassedFormat(randomDate.eventStartDate, randomDate.eventEndDate)
+    duration: toCardTimePassedFormat(randomDate.eventStartDate, randomDate.eventEndDate),
+    isFavourite: getRandomBoolean(),
+    id: eventNumber
   };
 };
 
@@ -185,7 +229,7 @@ const generateEvent = () => {
 const generateEvents = (number) => {
   return new Array(number)
     .fill(``)
-    .map(generateEvent);
+    .map((_, i) => generateEvent(i));
 };
 
-export {generateEvent, generateEvents, tripInfoData, EventTypes};
+export {generateEvent, generateEvents, tripInfoData, EventTypes, Cities, generateOffers};
