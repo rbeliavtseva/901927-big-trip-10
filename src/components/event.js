@@ -1,7 +1,7 @@
 import {AbstractSmartComponent} from './abstract-smart-component.js';
-import {toEventDateFormat} from '../utils/date-time-format.js';
 import {checkEventTypeArticle, toUppercaseFirstLetter} from '../utils/events.js';
 import {EventTypes, Cities} from '../mock/event.js';
+import flatpickr from "flatpickr";
 
 const createOfferMarkup = (offer) => {
   const {type, name, price} = offer;
@@ -51,6 +51,10 @@ class Event extends AbstractSmartComponent {
     this._setEventTypeClickHandler = null;
     this._setSubmitHandler = null;
     this._setClickHandler = null;
+    this._startDateFlatpickr = null;
+    this._endDateFlatpickr = null;
+
+    this._applyFlatpickr();
   }
 
   recoveryListeners() {
@@ -80,8 +84,58 @@ class Event extends AbstractSmartComponent {
     this._setClickHandler = handler;
   }
 
+  rerender() {
+    super.rerender();
+
+    this._applyFlatpickr();
+  }
+
+  removeElement() {
+    if (this._startDateFlatpickr) {
+      this.startDateFlatpickr.destroy();
+      this.startDateFlatpickr = null;
+    }
+
+    if (this._endDateFlatpickr) {
+      this.endDateFlatpickr.destroy();
+      this.endDateFlatpickr = null;
+    }
+
+    super.removeElement();
+  }
+
+  _applyFlatpickr() {
+    if (this._startDateFlatpickr) {
+      this.startDateFlatpickr.destroy();
+      this.startDateFlatpickr = null;
+    }
+
+    if (this._endDateFlatpickr) {
+      this.endDateFlatpickr.destroy();
+      this.endDateFlatpickr = null;
+    }
+
+    const startDateElement = this.getElement().querySelector(`#event-start-time-1`);
+    this._startDateFlatpickr = flatpickr(startDateElement, {
+      altInput: true,
+      allowInput: true,
+      defaultDate: this._eventData.date.eventStartDate,
+      enableTime: true,
+      altFormat: `d/m/Y H:i`
+    });
+
+    const endDateElement = this.getElement().querySelector(`#event-end-time-1`);
+    this._endDateFlatpickr = flatpickr(endDateElement, {
+      altInput: true,
+      allowInput: true,
+      defaultDate: this._eventData.date.eventEndDate,
+      enableTime: true,
+      altFormat: `d/m/Y H:i`
+    });
+  }
+
   getTemplate() {
-    const {eventType, city, date, offers, pictures, description, price, isFavourite, id} = this._eventData;
+    const {eventType, city, offers, pictures, description, price, isFavourite, id} = this._eventData;
 
     const offersMarkup = offers.length > 0
       ? offers.map((it) => createOfferMarkup(it)).join(`\n`)
@@ -132,12 +186,12 @@ class Event extends AbstractSmartComponent {
               <label class="visually-hidden" for="event-start-time-1">
                 From
               </label>
-              <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${toEventDateFormat(date.eventStartDate)}">
+              <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="">
               &mdash;
               <label class="visually-hidden" for="event-end-time-1">
                 To
               </label>
-              <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${toEventDateFormat(date.eventEndDate)}">
+              <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="">
             </div>
 
             <div class="event__field-group  event__field-group--price">

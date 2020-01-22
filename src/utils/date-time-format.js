@@ -1,4 +1,4 @@
-import {MS, TIME} from '../consts.js';
+import moment from 'moment';
 
 /**
  * Функция преобразования чисел меньше 10 в формат `0x`
@@ -18,23 +18,7 @@ const pad = (number) => {
  * @return {string} Возвращает строку
  */
 const formatTime = (date) => {
-  const hours = pad(date.getHours());
-  const minutes = pad(date.getMinutes());
-
-  return `${hours}:${minutes}`;
-};
-
-/**
- * Функция преобразования даты в формат `00D/00M/00Y 00:00`
- * @param {object} date Дата
- * @return {string} Возвращает строку
- */
-const toEventDateFormat = (date) => {
-  return pad(date.getDate()) +
-        `/` + pad(date.getMonth() + 1) +
-        `/` + date.getFullYear().toString().slice(2, 4) +
-        ` ` + pad(date.getHours()) +
-        `:` + pad(date.getMinutes());
+  return moment(date).format(`HH:mm`);
 };
 
 /**
@@ -44,8 +28,7 @@ const toEventDateFormat = (date) => {
  * @return {string} Возвращает строку
  */
 const toTripInfoDateFormat = (dateStart, dateEnd) => {
-  return toShortDateTimeFormat(dateStart) +
-        `&nbsp;&mdash;&nbsp;` + pad(dateEnd.getDate());
+  return `${moment(dateStart).format(`ddd DD`)}&nbsp;&mdash;&nbsp;${moment(dateEnd).format(`DD`)}`;
 };
 
 /**
@@ -54,8 +37,7 @@ const toTripInfoDateFormat = (dateStart, dateEnd) => {
  * @return {string} Возвращает строку
  */
 const toShortDateTimeFormat = (dateStart) => {
-  return dateStart.toLocaleString(`en-US`, {month: `short`}) +
-        ` ` + pad(dateStart.getDate());
+  return `${moment(dateStart).format(`ddd DD`)}`;
 };
 
 /**
@@ -65,7 +47,7 @@ const toShortDateTimeFormat = (dateStart) => {
  * @return {string} Возвращает строку
  */
 const addDaysToDate = (date, daysCount) => {
-  return new Date(date.getFullYear().toString().slice(2, 4), date.getMonth(), date.getDate() + daysCount);
+  return moment(date).add(daysCount, `days`).toDate();
 };
 
 /**
@@ -75,11 +57,18 @@ const addDaysToDate = (date, daysCount) => {
  * @return {string} Возвращает строку
  */
 const toCardTimePassedFormat = (dateStart, dateEnd) => {
-  const diffTime = Math.abs(dateStart - dateEnd);
-  const workTime = diffTime / (MS * TIME);
-  const hours = Math.floor(workTime / TIME);
-  const minutes = Math.floor((workTime % TIME));
-  return `${hours}H ${minutes}M`;
+  const dateA = moment(dateStart);
+  const dateB = moment(dateEnd);
+  const duration = moment.duration(dateB.diff(dateA));
+  if (duration.days() > 0) {
+    return `${pad(duration.days())}D ${pad(duration.hours())}H ${pad(duration.minutes())}M`;
+  } else {
+    if (duration.hours() >= 1) {
+      return `${pad(duration.hours())}H ${pad(duration.minutes())}M`;
+    } else {
+      return `${pad(duration.minutes())}M`;
+    }
+  }
 };
 
-export {formatTime, toEventDateFormat, toTripInfoDateFormat, toCardTimePassedFormat, toShortDateTimeFormat, addDaysToDate};
+export {formatTime, toTripInfoDateFormat, toCardTimePassedFormat, toShortDateTimeFormat, addDaysToDate};
