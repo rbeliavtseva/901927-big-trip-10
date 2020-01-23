@@ -1,6 +1,7 @@
 import {AbstractSmartComponent} from './abstract-smart-component.js';
 import {checkEventTypeArticle, toUppercaseFirstLetter} from '../utils/events.js';
 import {EventTypes, Cities} from '../mock/event.js';
+import {toCardTimePassedFormat} from '../utils/date-time-format.js';
 import flatpickr from "flatpickr";
 
 const createOfferMarkup = (offer) => {
@@ -84,6 +85,16 @@ class Event extends AbstractSmartComponent {
     this._setClickHandler = handler;
   }
 
+  _setStartDatePickrHandler(dateStr) {
+    this._eventData.date.eventStartDate = new Date(dateStr);
+    this._eventData.duration = toCardTimePassedFormat(this._eventData.date.eventStartDate, this._eventData.date.eventEndDate);
+  }
+
+  _setEndDatePickrHandler(dateStr) {
+    this._eventData.date.eventEndDate = new Date(dateStr);
+    this._eventData.duration = toCardTimePassedFormat(this._eventData.date.eventStartDate, this._eventData.date.eventEndDate);
+  }
+
   rerender() {
     super.rerender();
 
@@ -121,7 +132,8 @@ class Event extends AbstractSmartComponent {
       allowInput: true,
       defaultDate: this._eventData.date.eventStartDate,
       enableTime: true,
-      altFormat: `d/m/Y H:i`
+      altFormat: `d/m/Y H:i`,
+      onChange: (...inputs) => this._setStartDatePickrHandler(inputs[1])
     });
 
     const endDateElement = this.getElement().querySelector(`#event-end-time-1`);
@@ -130,7 +142,8 @@ class Event extends AbstractSmartComponent {
       allowInput: true,
       defaultDate: this._eventData.date.eventEndDate,
       enableTime: true,
-      altFormat: `d/m/Y H:i`
+      altFormat: `d/m/Y H:i`,
+      onChange: (...inputs) => this._setEndDatePickrHandler(inputs[1])
     });
   }
 
