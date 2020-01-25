@@ -1,7 +1,8 @@
 import {AbstractSmartComponent} from './abstract-smart-component.js';
-import {toEventDateFormat} from '../utils/date-time-format.js';
 import {checkEventTypeArticle, toUppercaseFirstLetter} from '../utils/events.js';
 import {EventTypes, Cities} from '../mock/event.js';
+import {toCardTimePassedFormat} from '../utils/date-time-format.js';
+import flatpickr from "flatpickr";
 
 const createOfferMarkup = (offer) => {
   const {type, name, price} = offer;
@@ -50,13 +51,20 @@ class Event extends AbstractSmartComponent {
     this._eventData = eventData;
     this._setEventTypeClickHandler = null;
     this._setSubmitHandler = null;
+    this._setCancelClickHandler = null;
     this._setClickHandler = null;
+    this._startDateFlatpickr = null;
+    this._endDateFlatpickr = null;
+
+    this._applyFlatpickr();
+    this._applyChangeTextInputs();
   }
 
   recoveryListeners() {
     this.setEventTypeClickHandler(this._setEventTypeClickHandler);
     this.setSubmitHandler(this._setSubmitHandler);
     this.setClickHandler(this._setClickHandler);
+    this.setCancelClickHandler(this._setCancelClickHandler);
   }
 
   setEventTypeClickHandler(handler) {
@@ -80,8 +88,128 @@ class Event extends AbstractSmartComponent {
     this._setClickHandler = handler;
   }
 
+  setCancelClickHandler(handler) {
+    this.getElement().querySelector(`.event__reset-btn`).addEventListener(`click`, handler);
+
+    this._setCancelClickHandler = handler;
+  }
+
+  _setStartDatePickrHandler(dateStr) {
+    const newPoint = {
+      ...this._eventData,
+      date: {
+        ...this._eventData.date,
+        eventStartDate: new Date(dateStr)
+      },
+      duration: toCardTimePassedFormat(new Date(dateStr), this._eventData.date.eventEndDate)
+    };
+    this._eventData = newPoint;
+  }
+
+  _setEndDatePickrHandler(dateStr) {
+    const newPoint = {
+      ...this._eventData,
+      date: {
+        ...this._eventData.date,
+        eventEndDate: new Date(dateStr)
+      },
+      duration: toCardTimePassedFormat(this._eventData.date.eventStartDate, new Date(dateStr))
+    };
+    this._eventData = newPoint;
+  }
+
+  rerender() {
+    super.rerender();
+
+    this._applyFlatpickr();
+    this._applyChangeTextInputs();
+  }
+
+  removeElement() {
+    if (this._startDateFlatpickr) {
+      this._startDateFlatpickr.destroy();
+      this._startDateFlatpickr = null;
+    }
+
+    if (this._endDateFlatpickr) {
+      this._endDateFlatpickr.destroy();
+      this._endDateFlatpickr = null;
+    }
+
+    super.removeElement();
+  }
+
+  _applyFlatpickr() {
+    if (this._startDateFlatpickr) {
+      this._startDateFlatpickr.destroy();
+      this._startDateFlatpickr = null;
+    }
+
+    if (this._endDateFlatpickr) {
+      this._endDateFlatpickr.destroy();
+      this._endDateFlatpickr = null;
+    }
+
+    const startDateElement = this.getElement().querySelector(`#event-start-time-1`);
+    this._startDateFlatpickr = flatpickr(startDateElement, {
+      altInput: true,
+      allowInput: true,
+      defaultDate: this._eventData.date.eventStartDate,
+      enableTime: true,
+      altFormat: `d/m/Y H:i`,
+      onChange: (...inputs) => this._setStartDatePickrHandler(inputs[1])
+    });
+
+    const endDateElement = this.getElement().querySelector(`#event-end-time-1`);
+    this._endDateFlatpickr = flatpickr(endDateElement, {
+      altInput: true,
+      allowInput: true,
+      defaultDate: this._eventData.date.eventEndDate,
+      enableTime: true,
+      altFormat: `d/m/Y H:i`,
+      onChange: (...inputs) => this._setEndDatePickrHandler(inputs[1])
+    });
+  }
+
+  /**
+   * Перезаписывает значение поля destination в объекте eventData
+   * @param {object} evt Событие
+   */
+  _onInputDestinationChange(evt) {
+    const newPoint = {
+      ...this._eventData,
+      city: evt.target.value
+    };
+
+    this._eventData = newPoint;
+  }
+
+  /**
+   * Перезаписывает значение поля price в объекте eventData
+   * @param {object} evt Событие
+   */
+  _onInputPriceChange(evt) {
+    const newPoint = {
+      ...this._eventData,
+      price: evt.target.value
+    };
+
+    this._eventData = newPoint;
+  }
+
+  /**
+   * Отслеживает изменения полей input
+   */
+  _applyChangeTextInputs() {
+    const eventInputDestination = this.getElement().querySelector(`.event__input--destination`);
+    eventInputDestination.addEventListener(`change`, (event) => this._onInputDestinationChange(event));
+
+    const eventInputPrice = this.getElement().querySelector(`.event__input--price`);
+    eventInputPrice.addEventListener(`change`, (event) => this._onInputPriceChange(event));
+  }
+
   getTemplate() {
-    const {eventType, city, date, offers, pictures, description, price, isFavourite, id} = this._eventData;
+    const {eventType, city, offers, pictures, description, price, isFavourite, id} = this._eventData;
 
     const offersMarkup = offers.length > 0
       ? offers.map((it) => createOfferMarkup(it)).join(`\n`)
@@ -132,12 +260,12 @@ class Event extends AbstractSmartComponent {
               <label class="visually-hidden" for="event-start-time-1">
                 From
               </label>
-              <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${toEventDateFormat(date.eventStartDate)}">
+              <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="">
               &mdash;
               <label class="visually-hidden" for="event-end-time-1">
                 To
               </label>
-              <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${toEventDateFormat(date.eventEndDate)}">
+              <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="">
             </div>
 
             <div class="event__field-group  event__field-group--price">

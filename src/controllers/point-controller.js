@@ -37,8 +37,7 @@ class PointController {
     */
     const onFavoriteButtonClick = () => {
       const updatedFavorite = !this._container.querySelector(`.event__favorite-checkbox`).checked;
-      const newPoint = singleEvent;
-      newPoint.isFavourite = updatedFavorite;
+      const newPoint = {...singleEvent, isFavourite: updatedFavorite};
       this._onDataChange(singleEvent, newPoint);
     };
     tripDayEventContentEdit.setClickHandler(onFavoriteButtonClick);
@@ -70,10 +69,16 @@ class PointController {
     /**
      * Функция по событию отправки формы заменяет существующий элемент на новый,
      * а затем снимает обработчик события закрытия по ESC
+     * @param {object} evt - событие
      */
-    const onTripEditFormSubmit = () => {
+    const onTripEditFormSubmit = (evt) => {
+      evt.preventDefault();
+
       container.replaceChild(tripDayEventContent.getElement(), tripDayEventContentEdit.getElement());
       document.removeEventListener(`keydown`, onEscReplaceElements);
+      const newPoint = {...singleEvent, ...this._tripDayEventContentEdit._eventData};
+      this._tripDayEventContent._eventData = newPoint;
+      this._tripDayEventContent.rerender();
     };
 
     /**
@@ -82,14 +87,22 @@ class PointController {
      * @param {object} evt - событие
      */
     const onEventTypeItemClick = (evt) => {
-      const newPoint = singleEvent;
-      newPoint.eventType = evt.target.value;
-      newPoint.offers = generateOffers(evt.target.value);
+      const newPoint = {...singleEvent, eventType: evt.target.value, offers: generateOffers(evt.target.value)};
       this._onDataChange(singleEvent, newPoint);
+    };
+
+    /**
+     * Функция по клику на кнопку Cancel отменяет все изменения, внесенные
+     * в форму редактирования
+     */
+    const onTripEditFormCancelClick = () => {
+      const oldPoint = singleEvent;
+      this._onDataChange(singleEvent, oldPoint);
     };
 
     tripDayEventContentEdit.setSubmitHandler(onTripEditFormSubmit);
     tripDayEventContentEdit.setEventTypeClickHandler(onEventTypeItemClick);
+    tripDayEventContentEdit.setCancelClickHandler(onTripEditFormCancelClick);
 
     render(container, tripDayEventContent, RenderPosition.BEFOREEND);
   }

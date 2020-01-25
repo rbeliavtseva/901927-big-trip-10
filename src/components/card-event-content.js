@@ -1,4 +1,4 @@
-import {AbstractComponent} from './abstract-component.js';
+import {AbstractSmartComponent} from './abstract-smart-component.js';
 import {formatTime} from '../utils/date-time-format.js';
 import {checkEventTypeArticle, toUppercaseFirstLetter} from '../utils/events.js';
 
@@ -14,14 +14,21 @@ const createOfferMarkup = (offer) => {
   );
 };
 
-class CardEventContent extends AbstractComponent {
+class CardEventContent extends AbstractSmartComponent {
   constructor(eventData) {
     super();
     this._eventData = eventData;
+    this._setClickHandler = null;
+  }
+
+  recoveryListeners() {
+    this.setClickHandler(this._setClickHandler);
   }
 
   setClickHandler(handler) {
     this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, handler);
+
+    this._setClickHandler = handler;
   }
 
   getTemplate() {
