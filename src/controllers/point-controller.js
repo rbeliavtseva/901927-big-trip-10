@@ -3,7 +3,6 @@ import {CardEventContent} from '../components/card-event-content.js';
 import {RenderPosition, Keycodes} from '../consts.js';
 import {Event} from '../components/event.js';
 import {generateOffers} from '../mock/event.js';
-import {updateObject} from '../utils/utilities.js';
 
 class PointController {
   constructor(container, onDataChange, onViewChange) {
@@ -38,7 +37,7 @@ class PointController {
     */
     const onFavoriteButtonClick = () => {
       const updatedFavorite = !this._container.querySelector(`.event__favorite-checkbox`).checked;
-      const newPoint = updateObject(singleEvent, {isFavourite: updatedFavorite});
+      const newPoint = {...singleEvent, isFavourite: updatedFavorite};
       this._onDataChange(singleEvent, newPoint);
     };
     tripDayEventContentEdit.setClickHandler(onFavoriteButtonClick);
@@ -77,7 +76,7 @@ class PointController {
 
       container.replaceChild(tripDayEventContent.getElement(), tripDayEventContentEdit.getElement());
       document.removeEventListener(`keydown`, onEscReplaceElements);
-      const newPoint = updateObject(singleEvent, this._tripDayEventContentEdit._eventData);
+      const newPoint = {...singleEvent, ...this._tripDayEventContentEdit._eventData};
       this._tripDayEventContent._eventData = newPoint;
       this._tripDayEventContent.rerender();
     };
@@ -88,7 +87,7 @@ class PointController {
      * @param {object} evt - событие
      */
     const onEventTypeItemClick = (evt) => {
-      const newPoint = updateObject(singleEvent, {eventType: evt.target.value, offers: generateOffers(evt.target.value)});
+      const newPoint = {...singleEvent, eventType: evt.target.value, offers: generateOffers(evt.target.value)};
       this._onDataChange(singleEvent, newPoint);
     };
 

@@ -2,7 +2,6 @@ import {AbstractSmartComponent} from './abstract-smart-component.js';
 import {checkEventTypeArticle, toUppercaseFirstLetter} from '../utils/events.js';
 import {EventTypes, Cities} from '../mock/event.js';
 import {toCardTimePassedFormat} from '../utils/date-time-format.js';
-import {updateObject} from '../utils/utilities.js';
 import flatpickr from "flatpickr";
 
 const createOfferMarkup = (offer) => {
@@ -96,24 +95,26 @@ class Event extends AbstractSmartComponent {
   }
 
   _setStartDatePickrHandler(dateStr) {
-    const newPoint = updateObject(
-        this._eventData,
-        {
-          date: updateObject(this._eventData.date, {eventStartDate: new Date(dateStr)}),
-          duration: toCardTimePassedFormat(new Date(dateStr), this._eventData.date.eventEndDate)
-        }
-    );
+    const newPoint = {
+      ...this._eventData,
+      date: {
+        ...this._eventData.date,
+        eventStartDate: new Date(dateStr)
+      },
+      duration: toCardTimePassedFormat(new Date(dateStr), this._eventData.date.eventEndDate)
+    };
     this._eventData = newPoint;
   }
 
   _setEndDatePickrHandler(dateStr) {
-    const newPoint = updateObject(
-        this._eventData,
-        {
-          date: updateObject(this._eventData.date, {eventEndDate: new Date(dateStr)}),
-          duration: toCardTimePassedFormat(this._eventData.date.eventStartDate, new Date(dateStr))
-        }
-    );
+    const newPoint = {
+      ...this._eventData,
+      date: {
+        ...this._eventData.date,
+        eventEndDate: new Date(dateStr)
+      },
+      duration: toCardTimePassedFormat(this._eventData.date.eventStartDate, new Date(dateStr))
+    };
     this._eventData = newPoint;
   }
 
@@ -175,12 +176,10 @@ class Event extends AbstractSmartComponent {
    * @param {object} evt Событие
    */
   _onInputDestinationChange(evt) {
-    const newPoint = updateObject(
-        this._eventData,
-        {
-          city: evt.target.value
-        }
-    );
+    const newPoint = {
+      ...this._eventData,
+      city: evt.target.value
+    };
 
     this._eventData = newPoint;
   }
@@ -190,12 +189,10 @@ class Event extends AbstractSmartComponent {
    * @param {object} evt Событие
    */
   _onInputPriceChange(evt) {
-    const newPoint = updateObject(
-        this._eventData,
-        {
-          price: evt.target.value
-        }
-    );
+    const newPoint = {
+      ...this._eventData,
+      price: evt.target.value
+    };
 
     this._eventData = newPoint;
   }
