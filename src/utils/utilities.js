@@ -24,3 +24,10 @@ export const updatedPoint = (
 
   return newEvent;
 };
+
+export const updateObject = (oldObject, updateProperties) => {
+  return {
+    ...oldObject,
+    ...updateProperties
+  };
+};

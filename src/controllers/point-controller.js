@@ -3,7 +3,7 @@ import {CardEventContent} from '../components/card-event-content.js';
 import {RenderPosition, Keycodes} from '../consts.js';
 import {Event} from '../components/event.js';
 import {generateOffers} from '../mock/event.js';
-import {updatedPoint} from '../utils/utilities.js';
+import {updateObject} from '../utils/utilities.js';
 
 class PointController {
   constructor(container, onDataChange, onViewChange) {
@@ -38,18 +38,7 @@ class PointController {
     */
     const onFavoriteButtonClick = () => {
       const updatedFavorite = !this._container.querySelector(`.event__favorite-checkbox`).checked;
-      const newPoint = updatedPoint(
-          singleEvent.eventType,
-          singleEvent.city,
-          singleEvent.date,
-          singleEvent.offers,
-          singleEvent.pictures,
-          singleEvent.description,
-          singleEvent.price,
-          singleEvent.duration,
-          updatedFavorite,
-          singleEvent.id
-      );
+      const newPoint = updateObject(singleEvent, {isFavourite: updatedFavorite});
       this._onDataChange(singleEvent, newPoint);
     };
     tripDayEventContentEdit.setClickHandler(onFavoriteButtonClick);
@@ -88,18 +77,7 @@ class PointController {
 
       container.replaceChild(tripDayEventContent.getElement(), tripDayEventContentEdit.getElement());
       document.removeEventListener(`keydown`, onEscReplaceElements);
-      const newPoint = updatedPoint(
-          this._tripDayEventContentEdit._eventData.eventType,
-          this._tripDayEventContentEdit._eventData.city,
-          this._tripDayEventContentEdit._eventData.date,
-          this._tripDayEventContentEdit._eventData.offers,
-          this._tripDayEventContentEdit._eventData.pictures,
-          this._tripDayEventContentEdit._eventData.description,
-          this._tripDayEventContentEdit._eventData.price,
-          this._tripDayEventContentEdit._eventData.duration,
-          this._tripDayEventContentEdit._eventData.isFavourite,
-          this._tripDayEventContentEdit._eventData.id
-      );
+      const newPoint = updateObject(singleEvent, this._tripDayEventContentEdit._eventData);
       this._tripDayEventContent._eventData = newPoint;
       this._tripDayEventContent.rerender();
     };
@@ -110,18 +88,7 @@ class PointController {
      * @param {object} evt - событие
      */
     const onEventTypeItemClick = (evt) => {
-      const newPoint = updatedPoint(
-          evt.target.value,
-          singleEvent.city,
-          singleEvent.date,
-          generateOffers(evt.target.value),
-          singleEvent.pictures,
-          singleEvent.description,
-          singleEvent.price,
-          singleEvent.duration,
-          singleEvent.isFavourite,
-          singleEvent.id
-      );
+      const newPoint = updateObject(singleEvent, {eventType: evt.target.value, offers: generateOffers(evt.target.value)});
       this._onDataChange(singleEvent, newPoint);
     };
 
