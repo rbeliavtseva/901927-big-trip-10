@@ -8,12 +8,13 @@ import {RenderPosition, SortType} from '../consts.js';
 import {PointController} from './point-controller.js';
 
 class TripController {
-  constructor(container) {
+  constructor(container, pointsModel) {
     this._container = container;
+    this._pointsModel = pointsModel;
     this._pointControllers = [];
   }
 
-  render(events, numberOfDays) {
+  render(numberOfDays) {
     const sortTrip = new Sort();
 
     const renderSorting = () => {
@@ -39,7 +40,7 @@ class TripController {
     const renderDayOfTrip = (day) => {
       const newDay = new TripCardDay(day, tripInfoData.date.startDate);
       const tripEventsList = newDay.getElement().querySelector(`.trip-events__list`);
-      const filteredEvents = events.filter((it) => it.date.day === day);
+      const filteredEvents = this._pointsModel.getPoints().filter((it) => it.date.day === day);
       if (filteredEvents.length > 0) {
         renderDayEvents(filteredEvents, tripEventsList);
       }
@@ -122,17 +123,17 @@ class TripController {
      * @param {string} sortingType Массив событий
      */
     const sortEvents = (sortingType) => {
-      const eventsCopy = [...events];
+      const eventsCopy = [...this._pointsModel.getPoints()];
       switch (sortingType) {
         case SortType.EVENT:
-          if (checkExistingEvents(events)) {
+          if (checkExistingEvents(this._pointsModel.getPoints())) {
             removeElements();
             renderCards(numberOfDays);
           }
           break;
 
         case SortType.PRICE:
-          if (checkExistingEvents(events)) {
+          if (checkExistingEvents(this._pointsModel.getPoints())) {
             removeElements();
             sortEventsByPrice(eventsCopy);
             renderDayEvents(eventsCopy, this._container);
@@ -140,7 +141,7 @@ class TripController {
           break;
 
         case SortType.TIME:
-          if (checkExistingEvents(events)) {
+          if (checkExistingEvents(this._pointsModel.getPoints())) {
             removeElements();
             sortEventsByDuration(eventsCopy);
             renderDayEvents(eventsCopy, this._container);

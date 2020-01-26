@@ -8,6 +8,7 @@ import {generateMenuItems} from './mock/menu.js';
 import {render} from './utils/render.js';
 import {RenderPosition, DAYS_COUNT, NUMBER_OF_EVENTS} from './consts.js';
 import {TripController} from './controllers/trip-controller.js';
+import {Points} from './models/points.js';
 
 const siteHeaderElement = document.querySelector(`.page-header`);
 const tripInfoSection = siteHeaderElement.querySelector(`.trip-info`);
@@ -40,5 +41,6 @@ const events = generateEvents(NUMBER_OF_EVENTS);
 renderTripInfo();
 renderMenu();
 renderFilter();
-const tripController = new TripController((renderTripContentList()));
-tripController.render(events, DAYS_COUNT);
+const points = new Points(events);
+const tripController = new TripController(renderTripContentList(), points);
+tripController.render(DAYS_COUNT);
