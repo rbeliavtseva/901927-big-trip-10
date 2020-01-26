@@ -46,9 +46,10 @@ const createDestinationListMarkup = (city) => {
 };
 
 class Event extends AbstractSmartComponent {
-  constructor(eventData) {
+  constructor(eventData, actionType) {
     super();
     this._eventData = eventData;
+    this._actionType = actionType;
     this._setEventTypeClickHandler = null;
     this._setSubmitHandler = null;
     this._setCancelClickHandler = null;
@@ -210,12 +211,17 @@ class Event extends AbstractSmartComponent {
 
   getTemplate() {
     const {eventType, city, offers, pictures, description, price, isFavourite, id} = this._eventData;
+    const actionType = this._actionType;
 
     const offersMarkup = offers.length > 0
       ? offers.map((it) => createOfferMarkup(it)).join(`\n`)
       : ``;
 
-    const picturesMarkup = pictures.map((it) => createPicturesMarkup(it)).join(`\n`);
+    let picturesMarkup = [];
+    if (pictures.length > 0) {
+      picturesMarkup = pictures.map((it) => createPicturesMarkup(it)).join(`\n`);
+    }
+
 
     const eventTypesMarkupTransfer = EventTypes.Transport.map((it) => createEventTypesMarkup(it, id, it === eventType)).join(`\n`);
 
@@ -277,7 +283,7 @@ class Event extends AbstractSmartComponent {
             </div>
 
             <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-            <button class="event__reset-btn" type="reset">Cancel</button>
+            <button class="event__reset-btn" type="reset">${actionType}</button>
 
             <input id="event-favorite-${id}" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" ${isFavourite ? `checked` : `` }>
             <label class="event__favorite-btn" for="event-favorite-${id}">

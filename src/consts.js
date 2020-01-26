@@ -43,7 +43,8 @@ const NUMBER_OF_EVENTS = 4;
 
 const RenderPosition = {
   AFTERBEGIN: `afterbegin`,
-  BEFOREEND: `beforeend`
+  BEFOREEND: `beforeend`,
+  AFTEREND: `afterend`
 };
 
 const Keycodes = {
@@ -54,6 +55,11 @@ const SortType = {
   EVENT: `event`,
   TIME: `time`,
   PRICE: `price`
+};
+
+const actionType = {
+  CREATE: `Cancel`,
+  EDIT: `Delete`
 };
 
 export {
@@ -72,5 +78,6 @@ export {
   NUMBER_OF_EVENTS,
   RenderPosition,
   Keycodes,
-  SortType
+  SortType,
+  actionType
 };

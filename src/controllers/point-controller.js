@@ -3,14 +3,16 @@ import {CardEventContent} from '../components/card-event-content.js';
 import {RenderPosition, Keycodes} from '../consts.js';
 import {Event} from '../components/event.js';
 import {generateOffers} from '../mock/event.js';
+import {actionType} from '../consts.js';
 
 class PointController {
-  constructor(container, onDataChange, onViewChange) {
+  constructor(container, onDataChange, onViewChange, action) {
     this._container = container;
     this._onDataChange = onDataChange;
     this._onViewChange = onViewChange;
     this._tripDayEventContent = null;
     this._tripDayEventContentEdit = null;
+    this._action = action;
   }
 
   /**
@@ -22,15 +24,31 @@ class PointController {
     }
   }
 
-  /**
-   * Функция рендерит два типа карточки для каждого ивента - сокращенную и форму редактирования
-   * @param {object} singleEvent - одиночное событие из массива событий одного дня
-   * @param {element} container - контейнер
-   */
-  _renderTripDayEventContent(singleEvent, container) {
-    const tripDayEventContent = this._tripDayEventContent = new CardEventContent(singleEvent);
-    const tripDayEventContentEdit = this._tripDayEventContentEdit = new Event(singleEvent);
+  _renderTripDayEventContent(singleEvent) {
+    const onEscReplaceElements = (evt) => {
+      if (evt.keyCode === Keycodes.ESC_KEYCODE) {
+        this._container.replaceChild(this._tripDayEventContent.getElement(), this._tripDayEventContentEdit.getElement());
+        document.removeEventListener(`keydown`, onEscReplaceElements);
+      }
+    };
 
+    let tripDayEventContent = null;
+    if (this._action === actionType.EDIT) {
+      tripDayEventContent = this._tripDayEventContent = new CardEventContent(singleEvent);
+
+      /**
+     * Функция по событию отправки формы заменяет существующий элемент на новый,
+     * а затем снимает обработчик события закрытия по ESC
+     */
+      const onRollupButtonClick = () => {
+        this._onViewChange();
+        this._container.replaceChild(this._tripDayEventContentEdit.getElement(), this._tripDayEventContent.getElement());
+        document.addEventListener(`keydown`, onEscReplaceElements);
+      };
+      tripDayEventContent.setClickHandler(onRollupButtonClick);
+    }
+
+    const tripDayEventContentEdit = this._tripDayEventContentEdit = new Event(singleEvent, this._action);
     /**
      * Функция по клику на кнопку "избранное" записывает значение атрибута checked на элементе,
      * меняя его на противоположное. Вызывает метод _onDataChange, передывая в него полученное значение
@@ -43,30 +61,6 @@ class PointController {
     tripDayEventContentEdit.setClickHandler(onFavoriteButtonClick);
 
     /**
-     * Функция принимает событие и проверяет значение свойства keyCode,
-     * в случае совпадения заменяя существующий элемент на новый, а затем снимает обработчик события
-     * @param {object} evt - событие
-     */
-    const onEscReplaceElements = (evt) => {
-      if (evt.keyCode === Keycodes.ESC_KEYCODE) {
-        container.replaceChild(tripDayEventContent.getElement(), tripDayEventContentEdit.getElement());
-        document.removeEventListener(`keydown`, onEscReplaceElements);
-      }
-    };
-
-    /**
-     * Функция по событию отправки формы заменяет существующий элемент на новый,
-     * а затем снимает обработчик события закрытия по ESC
-     */
-    const onRollupButtonClick = () => {
-      this._onViewChange();
-      container.replaceChild(tripDayEventContentEdit.getElement(), tripDayEventContent.getElement());
-      document.addEventListener(`keydown`, onEscReplaceElements);
-    };
-
-    tripDayEventContent.setClickHandler(onRollupButtonClick);
-
-    /**
      * Функция по событию отправки формы заменяет существующий элемент на новый,
      * а затем снимает обработчик события закрытия по ESC
      * @param {object} evt - событие
@@ -74,11 +68,12 @@ class PointController {
     const onTripEditFormSubmit = (evt) => {
       evt.preventDefault();
 
-      container.replaceChild(tripDayEventContent.getElement(), tripDayEventContentEdit.getElement());
-      document.removeEventListener(`keydown`, onEscReplaceElements);
+      if (this._action === actionType.EDIT) {
+        this._container.replaceChild(this._tripDayEventContent.getElement(), tripDayEventContentEdit.getElement());
+        document.removeEventListener(`keydown`, onEscReplaceElements);
+      }
       const newPoint = {...singleEvent, ...this._tripDayEventContentEdit._eventData};
-      this._tripDayEventContent._eventData = newPoint;
-      this._tripDayEventContent.rerender();
+      this._onDataChange(singleEvent, newPoint);
     };
 
     /**
@@ -88,7 +83,8 @@ class PointController {
      */
     const onEventTypeItemClick = (evt) => {
       const newPoint = {...singleEvent, eventType: evt.target.value, offers: generateOffers(evt.target.value)};
-      this._onDataChange(singleEvent, newPoint);
+      this._tripDayEventContentEdit._eventData = newPoint;
+      this._tripDayEventContentEdit.rerender();
     };
 
     /**
@@ -97,27 +93,47 @@ class PointController {
      */
     const onTripEditFormCancelClick = () => {
       const oldPoint = singleEvent;
-      this._onDataChange(singleEvent, oldPoint);
+      this._tripDayEventContentEdit._eventData = oldPoint;
+      this._tripDayEventContentEdit.rerender();
+    };
+
+    /**
+     * Функция по клику на кнопку Cancel отменяет все изменения, внесенные
+     * в форму редактирования
+     */
+    const onTripEditDeleteClick = () => {
+      const oldPoint = singleEvent;
+      this._onDataChange(oldPoint, null);
     };
 
     tripDayEventContentEdit.setSubmitHandler(onTripEditFormSubmit);
     tripDayEventContentEdit.setEventTypeClickHandler(onEventTypeItemClick);
-    tripDayEventContentEdit.setCancelClickHandler(onTripEditFormCancelClick);
+    if (this._action === actionType.CREATE) {
+      tripDayEventContentEdit.setCancelClickHandler(onTripEditFormCancelClick);
+    } else {
+      tripDayEventContentEdit.setCancelClickHandler(onTripEditDeleteClick);
+    }
 
-    render(container, tripDayEventContent, RenderPosition.BEFOREEND);
+    if (this._action === actionType.CREATE) {
+      render(this._container, tripDayEventContentEdit, RenderPosition.BEFOREEND);
+    } else {
+      render(this._container, tripDayEventContent, RenderPosition.BEFOREEND);
+    }
   }
 
   render(point) {
-    /**
-     * Функция удаляет элементы карточек точек маршрута
-     */
-    const removePoint = () => {
-      if (this._container.hasChildNodes()) {
-        this._container.firstChild.remove();
-      }
-    };
+    if (this._action !== actionType.CREATE) {
+      /**
+      * Функция удаляет элементы карточек точек маршрута
+      */
+      const removePoint = () => {
+        if (this._container.hasChildNodes()) {
+          this._container.firstChild.remove();
+        }
+      };
+      removePoint();
+    }
 
-    removePoint();
     this._renderTripDayEventContent(point, this._container);
   }
 }

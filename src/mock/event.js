@@ -221,6 +221,21 @@ const generateEvent = (eventNumber) => {
   };
 };
 
+const defaultEvent = () => {
+  return {
+    eventType: EventTypes.Transport[0],
+    city: ``,
+    date: ``,
+    offers: generateOffers(EventTypes.Transport[0]),
+    pictures: ``,
+    description: ``,
+    price: ``,
+    duration: ``,
+    isFavourite: false,
+    id: ``
+  };
+};
+
 /**
  * Функция генерирует массив из событий заданной длины
  * @param {number} number Количество событий
@@ -232,4 +247,4 @@ const generateEvents = (number) => {
     .map((_, i) => generateEvent(i));
 };
 
-export {generateEvent, generateEvents, tripInfoData, EventTypes, Cities, generateOffers};
+export {generateEvent, generateEvents, tripInfoData, EventTypes, Cities, generateOffers, defaultEvent, generateDescriptionText, generatePictures, startDate};

@@ -3,8 +3,8 @@ import {TripCardDay} from '../components/card.js';
 import {CardEvent} from '../components/card-event.js';
 import {FirstEventMessage} from '../components/first-event-message';
 import {Sort} from '../components/sort.js';
-import {tripInfoData} from '../mock/event.js';
-import {RenderPosition, SortType, DAYS_COUNT} from '../consts.js';
+import {tripInfoData, defaultEvent} from '../mock/event.js';
+import {RenderPosition, SortType, DAYS_COUNT, actionType} from '../consts.js';
 import {PointController} from './point-controller.js';
 
 class TripController {
@@ -12,6 +12,20 @@ class TripController {
     this._container = container;
     this._pointsModel = pointsModel;
     this._pointControllers = [];
+
+    this._createNewEvent();
+  }
+
+  /**
+   * Функция по клику на кнопку New event создает новый event из дефолтного
+   */
+  _createNewEvent() {
+    const newEventAddBtn = document.querySelector(`.trip-main__event-add-btn`);
+    newEventAddBtn.addEventListener(`click`, () => {
+      const sortTrip = this._container.querySelector(`.trip-events__trip-sort`);
+      const pointController = new PointController(sortTrip, (oldPoint, newPoint) => this._onDataChange(oldPoint, newPoint), () => this._onViewChange(), actionType.CREATE);
+      pointController.render(defaultEvent());
+    });
   }
 
   _tripControllerRender(numberOfDays) {
@@ -57,7 +71,7 @@ class TripController {
       filteredEvents.forEach((event) => {
         const tripDayEvent = new CardEvent();
         const tripEvent = tripDayEvent.getElement();
-        const pointController = new PointController(tripEvent, this._onDataChange, () => this._onViewChange());
+        const pointController = new PointController(tripEvent, (oldPoint, newPoint) => this._onDataChange(oldPoint, newPoint), () => this._onViewChange(), actionType.EDIT);
         this._pointControllers.push(pointController);
         pointController.render(event);
 
@@ -81,6 +95,16 @@ class TripController {
       } else {
         renderFirstEventMessage();
         return false;
+      }
+    };
+
+    /**
+     * Функция удаления сообщения
+     */
+    const deleteEventMessage = () => {
+      const eventMessage = this._container.querySelector(`.trip-events__msg`);
+      if (eventMessage) {
+        eventMessage.remove();
       }
     };
 
@@ -123,30 +147,25 @@ class TripController {
      * @param {string} sortingType Массив событий
      */
     const sortEvents = (sortingType) => {
+      removeElements();
       const eventsCopy = [...this._pointsModel.getPoints()];
-      switch (sortingType) {
-        case SortType.EVENT:
-          if (checkExistingEvents(this._pointsModel.getPoints())) {
-            removeElements();
+      if (checkExistingEvents(eventsCopy)) {
+        deleteEventMessage();
+        switch (sortingType) {
+          case SortType.EVENT:
             renderCards(numberOfDays);
-          }
-          break;
+            break;
 
-        case SortType.PRICE:
-          if (checkExistingEvents(this._pointsModel.getPoints())) {
-            removeElements();
+          case SortType.PRICE:
             sortEventsByPrice(eventsCopy);
             renderDayEvents(eventsCopy, this._container);
-          }
-          break;
+            break;
 
-        case SortType.TIME:
-          if (checkExistingEvents(this._pointsModel.getPoints())) {
-            removeElements();
+          case SortType.TIME:
             sortEventsByDuration(eventsCopy);
             renderDayEvents(eventsCopy, this._container);
-          }
-          break;
+            break;
+        }
       }
     };
 
@@ -158,7 +177,10 @@ class TripController {
   render(numberOfDays) {
     const removeChildrens = () => {
       if (this._container.hasChildNodes()) {
-        this._container.firstChild.remove();
+        if (this._container.children.length > 1) {
+          const tripSort = this._container.querySelector(`.trip-events__trip-sort`);
+          tripSort.remove();
+        }
       }
     };
     removeChildrens();
@@ -173,8 +195,12 @@ class TripController {
    * @param {object} newPoint - объект
    */
   _onDataChange(oldPoint, newPoint) {
-    this._tripDayEventContentEdit._eventData = newPoint;
-    this._tripDayEventContentEdit.rerender();
+    if (newPoint === null) {
+      this._pointsModel.deletePoint(oldPoint.id);
+    } else if (oldPoint !== null && newPoint !== null) {
+      this._pointsModel.updatePoint(oldPoint.id, newPoint);
+    }
+    this.render(DAYS_COUNT);
   }
 
   /**
