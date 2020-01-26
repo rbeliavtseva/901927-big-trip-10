@@ -4,7 +4,7 @@ import {CardEvent} from '../components/card-event.js';
 import {FirstEventMessage} from '../components/first-event-message';
 import {Sort} from '../components/sort.js';
 import {tripInfoData} from '../mock/event.js';
-import {RenderPosition, SortType} from '../consts.js';
+import {RenderPosition, SortType, DAYS_COUNT} from '../consts.js';
 import {PointController} from './point-controller.js';
 
 class TripController {
@@ -14,7 +14,7 @@ class TripController {
     this._pointControllers = [];
   }
 
-  render(numberOfDays) {
+  _tripControllerRender(numberOfDays) {
     const sortTrip = new Sort();
 
     const renderSorting = () => {
@@ -155,6 +155,17 @@ class TripController {
     sortEvents(SortType.EVENT);
   }
 
+  render(numberOfDays) {
+    const removeChildrens = () => {
+      if (this._container.hasChildNodes()) {
+        this._container.firstChild.remove();
+      }
+    };
+    removeChildrens();
+
+    this._tripControllerRender(numberOfDays);
+  }
+
   /**
    * Приватный метод, который обновляет поле isFavourite и перерендеривает элемент
    * на основе нового значения
@@ -172,6 +183,10 @@ class TripController {
    */
   _onViewChange() {
     this._pointControllers.forEach((it) => it.setDefaultView());
+  }
+
+  onActiveFilterChange() {
+    this.render(DAYS_COUNT);
   }
 }
 

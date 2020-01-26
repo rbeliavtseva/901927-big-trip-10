@@ -1,14 +1,13 @@
 import {TripInfo} from './components/trip-info.js';
 import {SiteMenu} from './components/menu.js';
-import {Filters} from './components/filter.js';
 import {TripContent} from './components/trip-content.js';
 import {generateEvents, tripInfoData} from './mock/event.js';
-import {generateFilters} from './mock/filter.js';
 import {generateMenuItems} from './mock/menu.js';
 import {render} from './utils/render.js';
 import {RenderPosition, DAYS_COUNT, NUMBER_OF_EVENTS} from './consts.js';
 import {TripController} from './controllers/trip-controller.js';
 import {Points} from './models/points.js';
+import {FilterController} from './controllers/filter-controller.js';
 
 const siteHeaderElement = document.querySelector(`.page-header`);
 const tripInfoSection = siteHeaderElement.querySelector(`.trip-info`);
@@ -25,11 +24,6 @@ const renderMenu = () => {
   render(tripControlsElement.children[0], new SiteMenu(menuItems), RenderPosition.AFTERBEGIN);
 };
 
-const filters = generateFilters();
-const renderFilter = () => {
-  render(tripControlsElement, new Filters(filters), RenderPosition.BEFOREEND);
-};
-
 const renderTripContentList = () => {
   render(tripEventsElement, new TripContent(), RenderPosition.BEFOREEND);
   const eventsListElement = tripEventsElement.querySelector(`.trip-days`);
@@ -40,7 +34,8 @@ const events = generateEvents(NUMBER_OF_EVENTS);
 
 renderTripInfo();
 renderMenu();
-renderFilter();
 const points = new Points(events);
 const tripController = new TripController(renderTripContentList(), points);
+const filterController = new FilterController(tripControlsElement, points, () => tripController.onActiveFilterChange());
+filterController.render();
 tripController.render(DAYS_COUNT);
