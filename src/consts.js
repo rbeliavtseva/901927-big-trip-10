@@ -1,6 +1,6 @@
-const CURRENT_YEAR = 2019;
+const CURRENT_YEAR = new Date(Date.now()).getFullYear();
 
-const CURRENT_MONTH = 3;
+const CURRENT_MONTH = new Date(Date.now()).getMonth();
 
 const Hours = {
   MIN: 0,
@@ -13,8 +13,8 @@ const Minutes = {
 };
 
 const Dates = {
-  START_DATE: 18,
-  END_DATE: 21
+  START_DATE: new Date(Date.now()).getDate() - 1,
+  END_DATE: new Date(Date.now()).getDate() + 2
 };
 
 const NumberOfSentences = {
@@ -43,7 +43,8 @@ const NUMBER_OF_EVENTS = 4;
 
 const RenderPosition = {
   AFTERBEGIN: `afterbegin`,
-  BEFOREEND: `beforeend`
+  BEFOREEND: `beforeend`,
+  AFTEREND: `afterend`
 };
 
 const Keycodes = {
@@ -55,6 +56,19 @@ const SortType = {
   TIME: `time`,
   PRICE: `price`
 };
+
+const actionType = {
+  CREATE: `Cancel`,
+  EDIT: `Delete`
+};
+
+const FilterNames = {
+  Everything: `everything`,
+  Future: `future`,
+  Past: `past`
+};
+
+const MsToDays = 1000 * 60 * 60 * 24;
 
 export {
   CURRENT_YEAR,
@@ -72,5 +86,8 @@ export {
   NUMBER_OF_EVENTS,
   RenderPosition,
   Keycodes,
-  SortType
+  SortType,
+  actionType,
+  FilterNames,
+  MsToDays
 };

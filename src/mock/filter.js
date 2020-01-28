@@ -1,13 +1,9 @@
-const FilterNames = [
-  `everything`,
-  `future`,
-  `past`
-];
+import {FilterNames} from '../consts.js';
 
 const generateFilters = () => {
-  return FilterNames.map((it) => {
+  return Object.values(FilterNames).map((it) => {
     return {
-      name: it,
+      name: it
     };
   });
 };

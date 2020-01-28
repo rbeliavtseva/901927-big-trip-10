@@ -10,6 +10,7 @@ const createFilterMarkup = (filter, isChecked) => {
         class="trip-filters__filter-input  visually-hidden"
         type="radio" name="trip-filter"
         value="${name}"
+        data-filter-type="${name}"
         ${isChecked ? `checked` : ``}>
       <label
         class="trip-filters__filter-label"
@@ -32,6 +33,29 @@ class Filters extends AbstractComponent {
         ${filtersMarkup}
       </form>`
     );
+  }
+
+  /**
+   * Функция навешивает обработчики событий на элементы фильтра
+   * @param {function} bind Функция, которая будет выполняться при клике на элемент
+   */
+  setFilterTypeChangeHandler(bind) {
+    const sortFields = this.getElement().querySelectorAll(`input`);
+    if (sortFields.length > 0) {
+      sortFields.forEach((field) => {
+        field.addEventListener(`click`, (evt) => {
+          const filterType = evt.target.dataset.filterType;
+
+          if (this._currentFilterType === filterType) {
+            return;
+          }
+
+          this._currentFilterType = filterType;
+
+          bind(this._currentFilterType);
+        });
+      });
+    }
   }
 }
 

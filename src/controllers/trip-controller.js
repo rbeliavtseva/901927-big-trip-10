@@ -3,17 +3,32 @@ import {TripCardDay} from '../components/card.js';
 import {CardEvent} from '../components/card-event.js';
 import {FirstEventMessage} from '../components/first-event-message';
 import {Sort} from '../components/sort.js';
-import {tripInfoData} from '../mock/event.js';
-import {RenderPosition, SortType} from '../consts.js';
+import {tripInfoData, defaultEvent} from '../mock/event.js';
+import {RenderPosition, SortType, DAYS_COUNT, actionType} from '../consts.js';
 import {PointController} from './point-controller.js';
 
 class TripController {
-  constructor(container) {
+  constructor(container, pointsModel) {
     this._container = container;
+    this._pointsModel = pointsModel;
     this._pointControllers = [];
+
+    this._createNewEvent();
   }
 
-  render(events, numberOfDays) {
+  /**
+   * Функция по клику на кнопку New event создает новый event из дефолтного
+   */
+  _createNewEvent() {
+    const newEventAddBtn = document.querySelector(`.trip-main__event-add-btn`);
+    newEventAddBtn.addEventListener(`click`, () => {
+      const sortTrip = this._container.querySelector(`.trip-events__trip-sort`);
+      const pointController = new PointController(sortTrip, (oldPoint, newPoint) => this._onDataChange(oldPoint, newPoint), () => this._onViewChange(), actionType.CREATE);
+      pointController.render(defaultEvent());
+    });
+  }
+
+  _tripControllerRender(numberOfDays) {
     const sortTrip = new Sort();
 
     const renderSorting = () => {
@@ -39,7 +54,7 @@ class TripController {
     const renderDayOfTrip = (day) => {
       const newDay = new TripCardDay(day, tripInfoData.date.startDate);
       const tripEventsList = newDay.getElement().querySelector(`.trip-events__list`);
-      const filteredEvents = events.filter((it) => it.date.day === day);
+      const filteredEvents = this._pointsModel.getPoints().filter((it) => it.date.day === day);
       if (filteredEvents.length > 0) {
         renderDayEvents(filteredEvents, tripEventsList);
       }
@@ -56,7 +71,7 @@ class TripController {
       filteredEvents.forEach((event) => {
         const tripDayEvent = new CardEvent();
         const tripEvent = tripDayEvent.getElement();
-        const pointController = new PointController(tripEvent, this._onDataChange, () => this._onViewChange());
+        const pointController = new PointController(tripEvent, (oldPoint, newPoint) => this._onDataChange(oldPoint, newPoint), () => this._onViewChange(), actionType.EDIT);
         this._pointControllers.push(pointController);
         pointController.render(event);
 
@@ -80,6 +95,16 @@ class TripController {
       } else {
         renderFirstEventMessage();
         return false;
+      }
+    };
+
+    /**
+     * Функция удаления сообщения
+     */
+    const deleteEventMessage = () => {
+      const eventMessage = this._container.querySelector(`.trip-events__msg`);
+      if (eventMessage) {
+        eventMessage.remove();
       }
     };
 
@@ -122,36 +147,45 @@ class TripController {
      * @param {string} sortingType Массив событий
      */
     const sortEvents = (sortingType) => {
-      const eventsCopy = [...events];
-      switch (sortingType) {
-        case SortType.EVENT:
-          if (checkExistingEvents(events)) {
-            removeElements();
+      removeElements();
+      const eventsCopy = [...this._pointsModel.getPoints()];
+      if (checkExistingEvents(eventsCopy)) {
+        deleteEventMessage();
+        switch (sortingType) {
+          case SortType.EVENT:
             renderCards(numberOfDays);
-          }
-          break;
+            break;
 
-        case SortType.PRICE:
-          if (checkExistingEvents(events)) {
-            removeElements();
+          case SortType.PRICE:
             sortEventsByPrice(eventsCopy);
             renderDayEvents(eventsCopy, this._container);
-          }
-          break;
+            break;
 
-        case SortType.TIME:
-          if (checkExistingEvents(events)) {
-            removeElements();
+          case SortType.TIME:
             sortEventsByDuration(eventsCopy);
             renderDayEvents(eventsCopy, this._container);
-          }
-          break;
+            break;
+        }
       }
     };
 
     renderSorting();
     sortTrip.setSortTypeChangeHandler(sortEvents);
     sortEvents(SortType.EVENT);
+  }
+
+  render(numberOfDays) {
+    const removeChildrens = () => {
+      if (this._container.hasChildNodes()) {
+        if (this._container.children.length > 1) {
+          const tripSort = this._container.querySelector(`.trip-events__trip-sort`);
+          tripSort.remove();
+        }
+      }
+    };
+    removeChildrens();
+
+    this._tripControllerRender(numberOfDays);
   }
 
   /**
@@ -161,8 +195,12 @@ class TripController {
    * @param {object} newPoint - объект
    */
   _onDataChange(oldPoint, newPoint) {
-    this._tripDayEventContentEdit._eventData = newPoint;
-    this._tripDayEventContentEdit.rerender();
+    if (newPoint === null) {
+      this._pointsModel.deletePoint(oldPoint.id);
+    } else if (oldPoint !== null && newPoint !== null) {
+      this._pointsModel.updatePoint(oldPoint.id, newPoint);
+    }
+    this.render(DAYS_COUNT);
   }
 
   /**
@@ -171,6 +209,10 @@ class TripController {
    */
   _onViewChange() {
     this._pointControllers.forEach((it) => it.setDefaultView());
+  }
+
+  onActiveFilterChange() {
+    this.render(DAYS_COUNT);
   }
 }
 
