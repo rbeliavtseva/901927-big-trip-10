@@ -100,9 +100,9 @@ const Offers = [
   }
 ];
 
-const startDate = new Date(consts.CURRENT_YEAR, consts.CURRENT_MONTH - 1, consts.Dates.START_DATE);
+const startDate = new Date(consts.CURRENT_YEAR, consts.CURRENT_MONTH, consts.Dates.START_DATE);
 
-const endDate = new Date(consts.CURRENT_YEAR, consts.CURRENT_MONTH - 1, consts.Dates.END_DATE);
+const endDate = new Date(consts.CURRENT_YEAR, consts.CURRENT_MONTH, consts.Dates.END_DATE);
 
 const tripInfoData = {
   date: {startDate, endDate},
@@ -135,7 +135,7 @@ const getRandomIntegerNumber = (min, max) => {
  * @return {*} Возвращает случайную дату начала события, количество прошедших дней, случайную дату конца события
  */
 const getRandomDate = () => {
-  const eventStartDate = new Date(consts.CURRENT_YEAR, consts.CURRENT_MONTH - 1, getRandomIntegerNumber(consts.Dates.START_DATE, consts.Dates.END_DATE));
+  const eventStartDate = new Date(consts.CURRENT_YEAR, consts.CURRENT_MONTH, getRandomIntegerNumber(consts.Dates.START_DATE, consts.Dates.END_DATE));
   const diffTime = Math.abs(eventStartDate - startDate);
   const day = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   eventStartDate.setHours(getRandomIntegerNumber(consts.Hours.MIN, consts.Hours.MAX));

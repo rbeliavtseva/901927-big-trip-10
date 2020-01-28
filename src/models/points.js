@@ -1,32 +1,32 @@
-import {FilterNames} from '../mock/filter.js';
+import {FilterNames} from '../consts.js';
 import {generatePictures, generateDescriptionText, startDate} from '../mock/event.js';
-import {NUMBER_OF_PICTURES} from '../consts.js';
+import {NUMBER_OF_PICTURES, MsToDays} from '../consts.js';
 
 class Points {
   constructor(events) {
     this._points = events;
     this._activeFilter = null;
 
-    this.changeActiveFilter(FilterNames[0]);
+    this.changeActiveFilter(FilterNames.Everything);
   }
 
   getPoints() {
     switch (this._activeFilter) {
-      case FilterNames[0]:
+      case FilterNames.Everything:
         return this._points;
-      case FilterNames[1]:
-        return this._points.filter((it) => it.id % 2 === 0); // it.date.eventStartDate > Date.now());
-      case FilterNames[2]:
-        return this._points.filter((it) => it.id % 2 === 1); // it.date.eventStartDate < Date.now());
+      case FilterNames.Past:
+        return this._points.filter((it) => new Date(it.date.eventStartDate) < new Date(Date.now()));
+      case FilterNames.Future:
+        return this._points.filter((it) => new Date(it.date.eventStartDate) > new Date(Date.now()));
       default:
         return null;
     }
   }
 
   getPoint(id) {
-    const pointById = this._points.filter((it) => it.id === id);
-    if (pointById) {
-      return pointById;
+    const point = this._points.filter((it) => it.id === id);
+    if (point) {
+      return point;
     } else {
       return null;
     }
@@ -35,28 +35,33 @@ class Points {
   /**
    * Функция обновляет точку маршрута
    * @param {number} id Идентификатор
-   * @param {object} point Текущая точка маршрута
+   * @param {object} newPoint Текущая точка маршрута
    */
-  updatePoint(id, point) {
-    const pointById = this._points.filter((it) => it.id === id);
-    if (pointById.length > 0) {
-      const updatedPoint = {...pointById[0], ...point};
+  updatePoint(id, newPoint) {
+    const point = this._points.filter((it) => it.id === id);
+    if (point.length > 0) {
+      const updatedPoint = {...point[0], ...newPoint};
       const pointsCopy = [...this._points];
-      pointsCopy.splice(pointById[0].id, 1, updatedPoint);
+      pointsCopy.splice(point[0].id, 1, updatedPoint);
       this._points = pointsCopy;
     } else {
       let newId = 0;
       if (this._points.length > 0) {
-        newId = this._points.sort((a, b) => b.id - a.id)[0].id + 1;
+        newId = Math.max(...this._points.map((it) => it.id)) + 1;
       }
-      const diffTime = Math.abs(point.date.eventStartDate - startDate);
-      const dayNumber = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) - 1;
+      const diffTime = Math.abs(newPoint.date.eventStartDate - startDate);
+      const dayNumber = Math.ceil(diffTime / MsToDays) - 1;
       const updatedPoint = {
-        ...point,
+        ...newPoint,
         description: generateDescriptionText(),
         pictures: generatePictures(NUMBER_OF_PICTURES),
         id: newId,
-        date: {eventStartDate: point.date.eventStartDate, day: dayNumber, eventEndDate: point.date.eventEndDate}};
+        date: {
+          eventStartDate: newPoint.date.eventStartDate,
+          day: dayNumber,
+          eventEndDate: newPoint.date.eventEndDate
+        }
+      };
       this._points.push(updatedPoint);
     }
   }
@@ -66,8 +71,8 @@ class Points {
   }
 
   deletePoint(id) {
-    const pointById = this._points.filter((it) => it.id === id);
-    if (pointById) {
+    const point = this._points.filter((it) => it.id === id);
+    if (point) {
       const updatedPoints = this._points.filter((it) => it.id !== id);
       this._points = updatedPoints;
     }

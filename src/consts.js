@@ -1,6 +1,6 @@
-const CURRENT_YEAR = 2019;
+const CURRENT_YEAR = new Date(Date.now()).getFullYear();
 
-const CURRENT_MONTH = 3;
+const CURRENT_MONTH = new Date(Date.now()).getMonth();
 
 const Hours = {
   MIN: 0,
@@ -13,8 +13,8 @@ const Minutes = {
 };
 
 const Dates = {
-  START_DATE: 18,
-  END_DATE: 21
+  START_DATE: new Date(Date.now()).getDate() - 1,
+  END_DATE: new Date(Date.now()).getDate() + 2
 };
 
 const NumberOfSentences = {
@@ -62,6 +62,14 @@ const actionType = {
   EDIT: `Delete`
 };
 
+const FilterNames = {
+  Everything: `everything`,
+  Future: `future`,
+  Past: `past`
+};
+
+const MsToDays = 1000 * 60 * 60 * 24;
+
 export {
   CURRENT_YEAR,
   CURRENT_MONTH,
@@ -79,5 +87,7 @@ export {
   RenderPosition,
   Keycodes,
   SortType,
-  actionType
+  actionType,
+  FilterNames,
+  MsToDays
 };
