@@ -4,9 +4,7 @@ const createMenuMarkup = (item, isActive) => {
   const {name} = item;
 
   return (
-    `<a class="trip-tabs__btn
-      trip-tabs__btn
-      ${isActive ? `--active` : ``}"
+    `<a class="trip-tabs__btn${isActive ? ` trip-tabs__btn--active` : ``}"
       href="#">
         ${name}
       </a>`

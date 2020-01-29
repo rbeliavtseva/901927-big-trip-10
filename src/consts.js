@@ -70,6 +70,8 @@ const FilterNames = {
 
 const MsToDays = 1000 * 60 * 60 * 24;
 
+const HIDDEN_CLASS = `visually-hidden`;
+
 export {
   CURRENT_YEAR,
   CURRENT_MONTH,
@@ -89,5 +91,6 @@ export {
   SortType,
   actionType,
   FilterNames,
-  MsToDays
+  MsToDays,
+  HIDDEN_CLASS
 };

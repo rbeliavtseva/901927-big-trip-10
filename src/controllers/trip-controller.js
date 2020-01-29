@@ -6,6 +6,7 @@ import {Sort} from '../components/sort.js';
 import {tripInfoData, defaultEvent} from '../mock/event.js';
 import {RenderPosition, SortType, DAYS_COUNT, actionType} from '../consts.js';
 import {PointController} from './point-controller.js';
+import {HIDDEN_CLASS} from '../consts.js';
 
 class TripController {
   constructor(container, pointsModel) {
@@ -213,6 +214,18 @@ class TripController {
 
   onActiveFilterChange() {
     this.render(DAYS_COUNT);
+  }
+
+  show() {
+    if (this._container) {
+      this._container.classList.remove(HIDDEN_CLASS);
+    }
+  }
+
+  hide() {
+    if (this._container) {
+      this._container.classList.add(HIDDEN_CLASS);
+    }
   }
 }
 

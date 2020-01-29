@@ -1,6 +1,5 @@
 import {createElement} from '../utils/render.js';
-
-const HIDDEN_CLASS = `visually-hidden`;
+import {HIDDEN_CLASS} from '../consts.js';
 
 class AbstractComponent {
   constructor() {
