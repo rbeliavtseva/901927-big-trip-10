@@ -62,8 +62,8 @@ const renderStatistics = (statistics) => {
 
 const events = generateEvents(NUMBER_OF_EVENTS);
 
-const statistics = new Statistics();
 const points = new Points(events);
+const statistics = new Statistics(points);
 const tripController = new TripController(renderTripContentList(), points);
 const filterController = new FilterController(tripControlsElement, points, () => tripController.onActiveFilterChange());
 renderTripInfo();
